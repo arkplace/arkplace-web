@@ -1,4 +1,10 @@
-const CanvasHandler = class {
+// TODO: Refactor to reduce function lenghts and improve code
+// TODO: Separate Drawing (view) functionality from UI (control)
+// TODO: Provide interface for Arkplace main class to call
+
+import DenseQuadTree from "/js/quadtree.js";
+
+export default class CanvasHandler {
 	constructor(name, canvas_size) {
 		// Canvas related variables
 		this.canvas_size = canvas_size;
@@ -30,7 +36,7 @@ const CanvasHandler = class {
 		this.canvasRef.height = document.body.offsetHeight;
 		this.canvasRef.width = document.body.offsetWidth;
 
-		// How much to offset point
+		// How much to offset image
 		this.offset_x = this.canvasRef.offsetLeft;
 		this.offset_y = this.canvasRef.offsetTop;
 
@@ -41,10 +47,10 @@ const CanvasHandler = class {
 		// Selected depth for interactive display
 		this.cur_depth = 0;
 
+		this.quad = new DenseQuadTree(canvas_size);
 		// initialize
 		// Add listeners
 		this.addListeners();
-		this.update();
 	}
 
 	MouseWheelHandler(e) {
@@ -54,8 +60,6 @@ const CanvasHandler = class {
 
     this.scale = 1 + delta*0.1;
     this.cumScale = this.cumScale*this.scale;
-
-    console.info(this.cumScale);
 
 		this.frameScale = 1/this.cumScale;
     this.drawLoop();
@@ -76,23 +80,21 @@ const CanvasHandler = class {
 
 		// Draw UI selected region highlight
 		this.drawQuadTreeElementOutline(this.cur_depth, this.mouse_x-this.offset_x,
-																				this.mouse_y-this.offset_y,
-																			this.offset_x,
+																		this.mouse_y-this.offset_y,
+																		this.offset_x,
 																		this.offset_y);
 	}
 
-	update(commandList) {
-		this.imgctx.restore();
+	update(item) {
+		this.drawQuadTreeElement(item.depth,
+			 												item.x,
+															item.y,
+															item.color);
+	}
+
+	clear() {
 		this.imgctx.clearRect(0, 0, this.canvasRef.width,
 											this.canvasRef.height);
-
-		for (i in commandList) {
-			this.drawQuadTreeElement(commandList[i].depth,
-				 												commandList[i].x,
-																commandList[i].y,
-																commandList[i].color);
-		}
-		this.imgctx.save();
 	}
 
 	addListeners() {
@@ -184,33 +186,3 @@ const CanvasHandler = class {
 	}
 
 };
-
-function	genRandomIntInsecure(N) {
-		return Math.floor(Math.random()*N);
-}
-
-function canvasBootstrap() {
-	var canvasSize = 1000;
-	let cManager = new CanvasHandler("defaultCanvas", canvasSize);
-
-	// TODO: Get data from blockchain
-	//
-	// Generate test data
-	commandList = [];
-	for (i = 0; i < 100; i++) {
-		tempDat = {
-			depth : Math.floor(i/10),
-			x : genRandomIntInsecure(canvasSize),
-			y : genRandomIntInsecure(canvasSize),
-			color : 'rgb(' + genRandomIntInsecure(255) + ',' +
-											genRandomIntInsecure(255) + ',' +
-											genRandomIntInsecure(255) + ')'
-		};
-		commandList.push(tempDat);
-	}
-
-	// Add data to canvas
-	cManager.update(commandList);
-	cManager.drawLoop();
-	console.info(cManager)
-}

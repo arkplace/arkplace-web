@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script type="module" src="js/quadtree.js" crossorigin="anonymous"></script>
-		<script src="js/canvas.js"></script>
+		<script type="module" src="js/utils.js"></script>
+		<script type="module" src="js/quadtree.js"></script>
+		<script type="module" src="js/canvas.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/front.css">
 	</head>
 	<body>
 		<div id="canvasWrap">
 			<canvas id="defaultCanvas"></canvas>
-			<script type="text/javascript">
-				// Canvas has been created, now initialize it
-				canvasBootstrap();
+			<script type="module">
+				import ArkPlace from "/js/arkplace.js";
+				import {canvasBootstrap} from "/js/utils.js";
+				//canvasBootstrap();
+				let ap = new ArkPlace("defaultCanvas", 1024);
 			</script>
 		</div>
 	</body>

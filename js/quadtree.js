@@ -1,14 +1,14 @@
 export default class DenseQuadTree {
   constructor(canvas_size) {
     this.canvas_size = canvas_size;
-    this.max_depth = Math.ceil(Math.log(canvas_size,2));
+    this.max_depth = this.log2(canvas_size);
     this.bf = 4;
-    this.qtitems = this.getIndexFromPos(this.max_depth);
+    this.qtitems = this.getQuadTreeSize(this.max_depth);
     this.storage = Array(this.qtitems);
   }
 
   createNewItem() {
-    item = {
+    var item = {
             useCount: 0,
             depth: 0,
             colorVal: "#000000",
@@ -17,14 +17,18 @@ export default class DenseQuadTree {
     return item;
   }
 
+  log2(n){
+    return Math.ceil(Math.log(n)/Math.log(2));
+  }
+
   getPrevOffsetFromIndex(index) {
-      depth = this.getDepthFromIndex(index);
-      offset_prev = this.getQuadTreeSize(depth);
-      return offset_prev;
+    var depth = this.getDepthFromIndex(index);
+    var offset_prev = this.getQuadTreeSize(depth);
+    return offset_prev;
   }
 
   getQuadTreeSize(depth) {
-      return Math.floor((1-Math.pow(this.bf, depth))/(1-this.bf));
+    return Math.floor((1-Math.pow(this.bf, depth))/(1-this.bf));
   }
 
   getDepthFromIndex(index) {
@@ -32,29 +36,29 @@ export default class DenseQuadTree {
   }
 
   getYValueFromIndex(index) {
-    depth = this.getDepthFromIndex(index);
-    offset_prev = this.getPrevOffsetFromIndex(index);
-    step = this.canvas_size / Math.pow(2, depth);
-    y = (index - offset_prev) * step / this.canvas_size;
+    var depth = this.getDepthFromIndex(index);
+    var offset_prev = this.getPrevOffsetFromIndex(index);
+    var step = this.canvas_size / Math.pow(2, depth);
+    var y = (index - offset_prev) * step / this.canvas_size;
     return Math.floor(y);
   }
 
   getXValueFromIndex(index) {
-    offset_prev = this.getPrevOffsetFromIndex(index);
-    x = (index - offset_prev) % this.canvas_size;
+    var offset_prev = this.getPrevOffsetFromIndex(index);
+    var x = (index - offset_prev) % this.canvas_size;
     return x;
   }
 
   getIndexFromPos(depth, x, y) {
-    offset_prev = this.getQuadTreeSize(depth);
-    step = this.canvas_size / Math.pow(2, depth);
-    offset_cur = Math.floor(y/step) * this.canvas_size + Math.floor(x/step);
-    index = offset_prev + offset_cur;
+    var offset_prev = this.getQuadTreeSize(depth);
+    var step = this.canvas_size / Math.pow(2, depth);
+    var offset_cur = Math.floor(y/step) * this.canvas_size + Math.floor(x/step);
+    var index = offset_prev + offset_cur;
     return index;
   }
 
   setDenseQuadTreeValue(color, visibility, depth, x, y) {
-    idx = this.getIndexFromPos(depth, x, y);
+    var idx = this.getIndexFromPos(depth, x, y);
 
     // If uninitialized
     if (typeof this.storage[idx] === 'undefined') {
@@ -68,7 +72,7 @@ export default class DenseQuadTree {
   }
 
   getDenseQuadTreeValue(depth, x, y) {
-    idx = this.getIndexFromPos(depth, x, y);
+    var idx = this.getIndexFromPos(depth, x, y);
 
     // If uninitialized
     if (typeof this.storage[idx] === 'undefined') {
