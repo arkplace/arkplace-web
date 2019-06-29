@@ -1,4 +1,5 @@
-import CanvasHandler from "/js/canvas.js";
+import CanvasHandler from "/js/controller.js";
+import Viewer from "/js/viewer.js";
 
 export function genRandomIntInsecure(N) {
 		return Math.floor(Math.random()*N);
@@ -17,7 +18,7 @@ export function canvasBootstrap(cManager) {
 											genRandomIntInsecure(255) + ',' +
 											genRandomIntInsecure(255) + ')'
 		};
-		cManager.update(tempDat);
+		cManager.commitToImage(tempDat);
 	}
 
 	// Add data to canvas

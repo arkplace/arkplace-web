@@ -1,7 +1,7 @@
 // TODO: Implements model layer containing business logic
 
-import {loadJSON, canvasBootstrap} from "/js/utils.js";
-import CanvasHandler from "/js/canvas.js";
+import {loadJSON} from "/js/utils.js";
+import CanvasHandler from "/js/controller.js";
 
 export default class ArkPlace{
   constructor(name, canvas_size) {
@@ -9,7 +9,6 @@ export default class ArkPlace{
     let canvasObj = new CanvasHandler(name, canvas_size);
     this.data;
     var peersJsonFile = "/peers.json";
-    canvasBootstrap(canvasObj);
     loadJSON(this.callbackPeersReceived, peersJsonFile);
     console.log(this);
 
