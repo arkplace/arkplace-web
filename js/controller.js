@@ -14,77 +14,104 @@ export default class CanvasHandler {
 
 		this.quad = new DenseQuadTree(canvas_size);
 		this.viewer = new Viewer(name, canvas_size);
-		// initialize
-		// Add listeners
 
+		// initialize
+    this.scale = 1.0;
+    this.cumScale = 1.0;
+    this.frameScale = 1.0;
+
+    // status flag for dragging
+    this.drag = false;
+
+    // Start of drag point
+    this.start_x = 0;
+    this.start_y = 0;
+
+    // Mouse position
+    this.mouse_x = 0;
+    this.mouse_y = 0;
+
+    // Selected depth for interactive display
+    this.current_depth = 0;
+
+    // TODO: is the bootstrap necessary?
+    // Bootstrap canvas
     canvasBootstrap(this.viewer);
+
+		// Add listeners
 		this.addListeners();
 	}
 
+  resetImage() {
+    this.viewer.clearImage();
+  }
+
+  // Drawing interface functions
 	commitToImage(item) {
 		this.viewer.commitToImage(item);
 	}
 
 	// UI related functions
 	setCurrentDepthUI(depth) {
-		this.cur_depth = depth;
+		this.current_depth = depth;
 	}
 
-	MouseWheelHandler(e) {
+  getWheelRolled(e) {
+    return Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+  }
+
+  getMousePositionFromEvent(e) {
+    return {
+      x: e.pageX - this.canvasRef.offsetLeft,
+      y: e.pageY - this.canvasRef.offsetTop
+    };
+  }
+
+  // TODO: Re-do zoom feature
+	mouseWheelHandler(e) {
 		// cross-browser wheel delta
 		var e = window.event || e; // old IE support
-		var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+		var delta = this.getWheelRolled(e);
 
 		this.scale = 1 + delta*0.1;
 		this.cumScale = this.cumScale*this.scale;
 
 		this.frameScale = 1/this.cumScale;
-		this.drawLoop();
+		this.viewer.drawLoop(this.mouse_x, this.mouse_y, this.current_depth);
 
 		return false;
 	}
 
+  mouseMoveHandler(e) {
+    const {x, y} = this.getMousePositionFromEvent(e);
+    this.mouse_x = x*this.frameScale;
+    this.mouse_y = y*this.frameScale;
+    if(this.drag) {
+      this.viewer.setOffsets(this.mouse_x - this.start_x,
+                             this.mouse_y - this.start_y);
+    }
+
+    this.viewer.drawLoop(this.mouse_x, this.mouse_y, this.current_depth);
+  }
+
+  mouseDownHandler(e) {
+    if(!this.drag){
+      this.drag = true;
+      const {ox, oy} = this.viewer.getOffsets();
+      this.start_x = this.mouse_x - ox;
+      this.start_y = this.mouse_y - oy;
+    }
+  }
+
+  mouseUpHandler(e) {
+		this.drag = false;
+  }
+
 	addListeners() {
-		// Mouse tracking
-		this.canvasRef.onmousemove = (function(e) {
-				this.mouse_x = (e.pageX - this.canvasRef.offsetLeft)*this.frameScale;
-				this.mouse_y = (e.pageY - this.canvasRef.offsetTop)*this.frameScale;
-
-				if(this.drag) {
-					this.offset_x = this.mouse_x - this.start_x;
-					this.offset_y = this.mouse_y - this.start_y;
-				}
-
-				this.viewer.drawLoop();
-		}).bind(this);
-
-		this.canvasRef.onmousewheel = (function(e) {
-			// cross-browser wheel delta
-			var e = window.event || e; // old IE support
-			var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-
-			this.scale = 1 + delta*0.1;
-			this.cumScale = this.cumScale*this.scale;
-			//this.ctx.scale(this.scale, this.scale);
-			this.viewer.drawLoop();
-			return false;
-		}).bind(this);
-
-		// Drag and drop for panning canvas
-		this.canvasRef.onmousedown = (function(e) {
-			if(!this.drag){
-				this.drag = true;
-				this.start_x = this.mouse_x-this.offset_x;
-				this.start_y = this.mouse_y-this.offset_y;
-			}
-		}).bind(this);
-
-		this.canvasRef.onmouseup = (function(e) {
-				this.drag = false;
-				this.offset_x = this.mouse_x - this.start_x;
-				this.offset_y = this.mouse_y - this.start_y;
-				this.tempoffset_x = 0;
-				this.tempoffset_y = 0;
-		}).bind(this);
+		this.canvasRef.onmousemove = (this.mouseMoveHandler).bind(this);
+    // TODO: Re-do zoom feature
+    // this.canvasRef.onmousewheel = (this.mouseWheelHandler).bind(this);
+		this.canvasRef.onmousedown = (this.mouseDownHandler).bind(this);
+		this.canvasRef.onmouseup = (this.mouseUpHandler).bind(this);
 	}
 };

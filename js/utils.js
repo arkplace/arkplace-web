@@ -6,23 +6,23 @@ export function genRandomIntInsecure(N) {
 }
 
 // TODO: Move bootstrap to ArkPlace class constructor
-export function canvasBootstrap(cManager) {
+export function canvasBootstrap(viewer) {
 	// TODO: Get data from blockchain
 	// Generate test data
 	for (var i = 0; i < 1000; i++) {
 		var tempDat = {
 			depth : Math.floor(i/10),
-			x : genRandomIntInsecure(cManager.canvas_size),
-			y : genRandomIntInsecure(cManager.canvas_size),
+			x : genRandomIntInsecure(viewer.canvas_size),
+			y : genRandomIntInsecure(viewer.canvas_size),
 			color : 'rgb(' + genRandomIntInsecure(255) + ',' +
 											genRandomIntInsecure(255) + ',' +
 											genRandomIntInsecure(255) + ')'
 		};
-		cManager.commitToImage(tempDat);
+		viewer.commitToImage(tempDat);
 	}
 
 	// Add data to canvas
-	cManager.drawLoop();
+	viewer.drawLoop(0, 0, 0);
 }
 
 

@@ -2,53 +2,51 @@ export default class Viewer {
     constructor(name, canvas_size) {
       // Canvas related variables
       this.canvas_size = canvas_size;
-      this.scale = 1.0;
-      this.cumScale = 1.0;
-      this.frameScale = 1.0;
-
-      // Mouse position
-      this.mouse_x = 0;
-      this.mouse_y = 0;
-
-      // status flag for dragging
-      this.drag = false;
-
-      // Start of drag point
-      this.start_x = 0;
-      this.start_y = 0;
 
       // Setup canvas and context
-      this.canvasRef = document.getElementById(name);
-      this.ctx = this.canvasRef.getContext("2d");
-
-      // Setup image storage
-      this.img = document.createElement('canvas');
-      this.img.height = canvas_size;
-      this.img.width = canvas_size;
-      this.imgctx = this.img.getContext('2d');
-
-      this.canvasRef.height = document.body.offsetHeight;
-      this.canvasRef.width = document.body.offsetWidth;
+      this.setupCanvas(name);
+      this.setupImageStorage(canvas_size);
 
       // How much to offset image
       this.offset_x = this.canvasRef.offsetLeft;
       this.offset_y = this.canvasRef.offsetTop;
+    }
 
-      // Temp offset to update display while dragging
-      this.tempoffset_x = 0;
-      this.tempoffset_y = 0;
+    setupCanvas(name) {
+      this.canvasRef = document.getElementById(name);
+      this.ctx = this.canvasRef.getContext("2d");
+      this.canvasRef.height = document.body.offsetHeight;
+      this.canvasRef.width = document.body.offsetWidth;
+    }
 
-      // Selected depth for interactive display
-      this.cur_depth = 0;
+    setupImageStorage(canvas_size) {
+      this.img = document.createElement('canvas');
+      this.img.height = canvas_size;
+      this.img.width = canvas_size;
+      this.imgctx = this.img.getContext('2d');
+    }
+
+    setOffsets(x, y) {
+      this.offset_x = x;
+      this.offset_y = y;
+    }
+
+    getOffsets() {
+      return {ox: this.offset_x, oy: this.offset_y};
     }
 
     copyFromImage() {
-    		this.imgctx.restore();
-    		this.imgctx.scale(this.cumScale, this.cumScale);
     		return this.imgctx.getImageData(0,
   																			0,
   																			this.canvas_size,
   																			this.canvas_size);
+    }
+
+    clearImage() {
+      this.imgctx.clearRect(0,
+                            0,
+                            this.canvasRef.width,
+                            this.canvasRef.height);
     }
 
     clearCanvas() {
@@ -58,7 +56,7 @@ export default class Viewer {
                         this.ctx.canvas.height);
     }
 
-    drawLoop() {
+    drawLoop(mx, my, depth) {
       this.clearCanvas();
 
       // Copy pixels from image holder and display on main canvas
@@ -67,21 +65,14 @@ export default class Viewer {
 
   		var color = "#F00";
   		// Draw UI selected region highlight
-  		this.drawQuadTreeElementOutline(this.cur_depth,
-  																		this.mouse_x-this.offset_x,
-  																		this.mouse_y-this.offset_y,
+  		this.drawQuadTreeElementOutline(depth,
+  																		mx - this.offset_x,
+  																		my - this.offset_y,
   																		this.offset_x,
   																		this.offset_y,
   																		color,
   																		false);
     }
-
-		clear() {
-			this.imgctx.clearRect(0,
-														0,
-														this.canvasRef.width,
-														this.canvasRef.height);
-		}
 
     outOfBounds(x, y) {
       return (x < 0
