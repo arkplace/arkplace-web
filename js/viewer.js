@@ -36,10 +36,10 @@ export default class Viewer {
     }
 
     copyFromImage() {
-    		return this.imgctx.getImageData(0,
-  																			0,
-  																			this.canvas_size,
-  																			this.canvas_size);
+  		return this.imgctx.getImageData(0,
+																			0,
+																			this.canvas_size,
+																			this.canvas_size);
     }
 
     clearImage() {
@@ -65,9 +65,9 @@ export default class Viewer {
 
   		var color = "#F00";
   		// Draw UI selected region highlight
-  		this.drawQuadTreeElementOutline(depth,
-  																		mx - this.offset_x,
+  		this.drawQuadTreeElementOutline(mx - this.offset_x,
   																		my - this.offset_y,
+                                      depth,
   																		this.offset_x,
   																		this.offset_y,
   																		color,
@@ -89,53 +89,57 @@ export default class Viewer {
       return Math.floor(pixel_val/step)*step;
     }
 
-    commitToImage(item) {
-  		this.drawQuadTreeElement(item.depth,
-			 												item.x,
-															item.y,
-															item.color);
+    commitToImage(x, y, depth, item) {
+  		this.drawQuadTreeElement(x,
+															y,
+                              depth,
+															item.colorVal);
   	}
 
     paintQuadOnCanvas(rect_x, rect_y, size, offset_x, offset_y, color, to_fill) {
-      this.ctx.beginPath();
-      this.ctx.rect(rect_x + offset_x,
-                    rect_y + offset_y,
-                    size,
-                    size);
-
       if (to_fill) {
+        this.imgctx.beginPath();
+        this.imgctx.rect(rect_x + offset_x,
+                      rect_y + offset_y,
+                      size,
+                      size);
         // Get pixel value from quadtree element
         this.imgctx.fillStyle = color;
         this.imgctx.fillRect(rect_x, rect_y, size, size);
+        this.imgctx.closePath();
       }
       else {
+        this.ctx.beginPath();
+        this.ctx.rect(rect_x + offset_x,
+                      rect_y + offset_y,
+                      size,
+                      size);
         this.ctx.strokeStyle = color;
         this.ctx.stroke();
+        this.ctx.closePath();
       }
-
-      this.ctx.closePath();
     }
 
-    prepareForDrawing(depth, x, y) {
+    prepareForDrawing(x, y, depth) {
       var s = this.getQuadSizeAtDepth(depth);
       var cx = this.getQuadOffsetOfPixel(x, s);
       var cy = this.getQuadOffsetOfPixel(y, s);
       return {cx, cy, s};
     }
 
-  	drawQuadTreeElementGeneric(depth, x, y, ox, oy,  pixel_color, to_fill) {
+  	drawQuadTreeElementGeneric(x, y, depth, ox, oy,  pixel_color, to_fill) {
       if (this.outOfBounds(x, y))
         return;
 
-      const {cx, cy, s} = this.prepareForDrawing(depth, x, y);
+      const {cx, cy, s} = this.prepareForDrawing(x, y, depth);
       this.paintQuadOnCanvas(cx, cy, s, ox, oy,  pixel_color, to_fill);
   	}
 
-    drawQuadTreeElement(depth, x, y, pixel_color) {
-      this.drawQuadTreeElementGeneric(depth, x, y, 0, 0, pixel_color, true);
+    drawQuadTreeElement(x, y, depth, pixel_color) {
+      this.drawQuadTreeElementGeneric(x, y, depth, 0, 0, pixel_color, true);
   	}
 
-    drawQuadTreeElementOutline(depth, x, y, offset_x, offset_y, pixel_color) {
-      this.drawQuadTreeElementGeneric(depth, x, y, offset_x, offset_y, pixel_color, false);
+    drawQuadTreeElementOutline(x, y, depth, offset_x, offset_y, pixel_color) {
+      this.drawQuadTreeElementGeneric(x, y, depth, offset_x, offset_y, pixel_color, false);
   	}
 };

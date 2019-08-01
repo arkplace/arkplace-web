@@ -2,11 +2,11 @@
 // TODO: Separate Drawing (view) functionality from UI (control)
 // TODO: Provide interface for Arkplace main class to call
 
-import {canvasBootstrap} from "/js/utils.js";
+import {canvasBootstrap, genRandomIntInsecure} from "/js/utils.js";
 import DenseQuadTree from "/js/quadtree.js";
 import Viewer from "/js/viewer.js";
 
-export default class CanvasHandler {
+export default class Controller {
 	constructor(name, canvas_size) {
 	  // Setup canvas and context
 	  this.canvasRef = document.getElementById(name);
@@ -36,10 +36,13 @@ export default class CanvasHandler {
 
     // TODO: is the bootstrap necessary?
     // Bootstrap canvas
-    canvasBootstrap(this.viewer);
+    canvasBootstrap(this, canvas_size);
 
 		// Add listeners
 		this.addListeners();
+
+    // Prepare for rendering
+    this.updateImage();
 	}
 
   resetImage() {
@@ -47,8 +50,31 @@ export default class CanvasHandler {
   }
 
   // Drawing interface functions
-	commitToImage(item) {
-		this.viewer.commitToImage(item);
+  updateDenseTreeItem(x, y, depth, color, visible) {
+    this.quad.setDenseQuadTreeItem(x, y, depth, color, visible);
+  }
+
+  updateImage() {
+    this.resetImage();
+    var max_items = this.quad.getQuadTreeSize()
+    for (var i = 0; i < max_items; i++) {
+      var tempItem = this.quad.getDenseQuadTreeItemByIndex(i);
+      if (tempItem.visible) {
+
+        this.commitToImage(i, tempItem);
+        var x = this.quad.getXValueFromIndex(i);
+        var y = this.quad.getYValueFromIndex(i);
+        var depth = this.quad.getDepthFromIndex(i);
+        console.log(x, y, depth, tempItem.colorVal);
+      }
+    }
+    // Render
+  	this.viewer.drawLoop(0, 0, 0);
+  }
+
+  commitToImage(index, item) {
+    let {x, y, depth} = this.quad.getPosFromIndex(index);
+		this.viewer.commitToImage(x, y, depth, item);
 	}
 
 	// UI related functions

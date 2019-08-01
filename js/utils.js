@@ -6,25 +6,22 @@ export function genRandomIntInsecure(N) {
 }
 
 // TODO: Move bootstrap to ArkPlace class constructor
-export function canvasBootstrap(viewer) {
+export function canvasBootstrap(controller, canvas_size) {
 	// TODO: Get data from blockchain
 	// Generate test data
-	for (var i = 0; i < 1000; i++) {
-		var tempDat = {
-			depth : Math.floor(i/10),
-			x : genRandomIntInsecure(viewer.canvas_size),
-			y : genRandomIntInsecure(viewer.canvas_size),
-			color : 'rgb(' + genRandomIntInsecure(255) + ',' +
-											genRandomIntInsecure(255) + ',' +
-											genRandomIntInsecure(255) + ')'
-		};
-		viewer.commitToImage(tempDat);
+	for (var i = 0; i < 10000; i++) {
+    var x = genRandomIntInsecure(canvas_size);
+		var y = genRandomIntInsecure(canvas_size);
+		var depth = genRandomIntInsecure(10);
+		controller.updateDenseTreeItem(x, y, depth,
+			'rgb(' + genRandomIntInsecure(255) + ',' +
+						  genRandomIntInsecure(255) + ',' +
+							genRandomIntInsecure(255) + ')',
+      true);
 	}
+  controller.updateImage();
 
-	// Add data to canvas
-	viewer.drawLoop(0, 0, 0);
 }
-
 
 export function loadJSON(callback, filename) {
     var xobj = new XMLHttpRequest();

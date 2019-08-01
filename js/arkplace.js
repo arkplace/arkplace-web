@@ -1,16 +1,15 @@
 // TODO: Implements model layer containing business logic
 
 import {loadJSON} from "/js/utils.js";
-import CanvasHandler from "/js/controller.js";
+import Controller from "/js/controller.js";
 
 export default class ArkPlace{
   constructor(name, canvas_size) {
     // TODO: Initialize CanvasHandler object
-    let canvasObj = new CanvasHandler(name, canvas_size);
+    let canvasObj = new Controller(name, canvas_size);
     this.data;
     var peersJsonFile = "/peers.json";
     loadJSON(this.callbackPeersReceived, peersJsonFile);
-    console.log(this);
 
     // TODO: Hardcode network parameters and app constants
   }

@@ -10,9 +10,8 @@ export default class DenseQuadTree {
   createNewItem() {
     var item = {
             useCount: 0,
-            depth: 0,
-            colorVal: "#000000",
-            visible: False
+            colorVal: "#777777",
+            visible: false
            };
     return item;
   }
@@ -27,59 +26,72 @@ export default class DenseQuadTree {
     return offset_prev;
   }
 
-  getQuadTreeSize(depth) {
+  getQuadTreeSize(depth = this.max_depth) {
+    if (depth < 0)
+      return 0;
     return Math.floor((1-Math.pow(this.bf, depth))/(1-this.bf));
   }
 
-  getDepthFromIndex(index) {
-    return Math.ceil(Math.log(1-index*(1-this.bf))/Math.log(this.bf));
+  getXValueFromIndex(index) {
+    var depth = this.getDepthFromIndex(index);
+    var offset_prev = this.getPrevOffsetFromIndex(index);
+    var step = this.canvas_size / Math.pow(2, depth);
+    var x = ((index - offset_prev) % Math.pow(2, depth)) * step;
+    return x;
   }
 
   getYValueFromIndex(index) {
     var depth = this.getDepthFromIndex(index);
     var offset_prev = this.getPrevOffsetFromIndex(index);
     var step = this.canvas_size / Math.pow(2, depth);
-    var y = (index - offset_prev) * step / this.canvas_size;
+    var y = (index - offset_prev) * step / Math.pow(2, depth);
     return Math.floor(y);
   }
 
-  getXValueFromIndex(index) {
-    var offset_prev = this.getPrevOffsetFromIndex(index);
-    var x = (index - offset_prev) % this.canvas_size;
-    return x;
+  getDepthFromIndex(index) {
+    return Math.floor(Math.log(1-index*(1-this.bf))/Math.log(this.bf));
   }
 
-  getIndexFromPos(depth, x, y) {
+  getPosFromIndex(index) {
+    var x = this.getXValueFromIndex(index);
+    var y = this.getYValueFromIndex(index);
+    var depth = this.getDepthFromIndex(index);
+
+    return {x, y, depth};
+  }
+
+  getIndexFromPos(x, y, depth) {
     var offset_prev = this.getQuadTreeSize(depth);
     var step = this.canvas_size / Math.pow(2, depth);
-    var offset_cur = Math.floor(y/step) * this.canvas_size + Math.floor(x/step);
+    var offset_cur = Math.floor(y/step) * Math.pow(2, depth) + Math.floor(x/step);
     var index = offset_prev + offset_cur;
     return index;
   }
 
-  setDenseQuadTreeValue(color, visibility, depth, x, y) {
-    var idx = this.getIndexFromPos(depth, x, y);
+  setDenseQuadTreeItem(x, y, depth, color, visible) {
+    var idx = this.getIndexFromPos(x, y, depth);
 
     // If uninitialized
     if (typeof this.storage[idx] === 'undefined') {
       this.storage[idx] = this.createNewItem();
     }
-    else {
-      this.storage[idx].useCount++;
-      this.storage[idx].colorVal = color;
-      this.storage[idx].visible = visibility;
-    }
+    this.storage[idx].useCount++;
+    this.storage[idx].colorVal = color;
+    this.storage[idx].visible = visible;
   }
 
-  getDenseQuadTreeValue(depth, x, y) {
-    var idx = this.getIndexFromPos(depth, x, y);
-
+  getDenseQuadTreeItemByIndex(index) {
     // If uninitialized
-    if (typeof this.storage[idx] === 'undefined') {
+    if (typeof this.storage[index] === 'undefined') {
       return this.createNewItem();
     }
     else {
-      return this.storage[idx];
+      return this.storage[index];
     }
+  }
+
+  getDenseQuadTreeItem(x, y, depth) {
+    var idx = this.getIndexFromPos(x, y, depth);
+    return this.getDenseQuadTreeItembyIndex(idx);
   }
 }
