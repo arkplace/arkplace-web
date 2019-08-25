@@ -2,12 +2,12 @@
 // TODO: Separate Drawing (view) functionality from UI (control)
 // TODO: Provide interface for Arkplace main class to call
 
-import {canvasBootstrap, genRandomIntInsecure} from "/js/utils.js";
+import {canvasBootstrap, genRandomIntInsecure, updateXYValuesUI, updateDepthValuesUI} from "/js/utils.js";
 import DenseQuadTree from "/js/quadtree.js";
 import Viewer from "/js/viewer.js";
 
 export default class Controller {
-	constructor(name, canvas_size) {
+	constructor(name, canvas_size, canvas_offset) {
 	  // Setup canvas and context
 	  this.canvasRef = document.getElementById(name);
 	  this.ctx = this.canvasRef.getContext("2d");
@@ -31,12 +31,16 @@ export default class Controller {
     this.mouse_x = 0;
     this.mouse_y = 0;
 
+    // Last selected pixels
+    this.mouse_selected_x = 0;
+    this.mouse_selected_y = 0;
+
     // Selected depth for interactive display
     this.current_depth = 0;
-
+    this.max_depth = 10;
     // TODO: is the bootstrap necessary?
     // Bootstrap canvas
-    canvasBootstrap(this, canvas_size);
+    //canvasBootstrap(this, canvas_size);
 
 		// Add listeners
 		this.addListeners();
@@ -47,6 +51,16 @@ export default class Controller {
 
   resetImage() {
     this.viewer.clearImage();
+  }
+
+  // Set depth value to be used for rendering
+  setDepth(depth) {
+    this.current_depth = depth;
+  }
+
+  // Update gui value of depth to reflect current
+  updateDepth() {
+    updateDepthValuesUI(this.current_depth);
   }
 
   // Drawing interface functions
@@ -78,8 +92,16 @@ export default class Controller {
 	}
 
 	// UI related functions
-	setCurrentDepthUI(depth) {
-		this.current_depth = depth;
+	setCurrentDepthForCanvas(delta) {
+  	var d = this.current_depth + delta;
+    if (d < 0) {
+      d = 0;
+    }
+    else if(d > this.max_depth) {
+      d = this.max_depth;
+    }
+    console.log(d);
+    updateDepthValuesUI(d);
 	}
 
   getWheelRolled(e) {
@@ -94,15 +116,13 @@ export default class Controller {
   }
 
   // TODO: Re-do zoom feature
+
 	mouseWheelHandler(e) {
 		// cross-browser wheel delta
 		var e = window.event || e; // old IE support
 		var delta = this.getWheelRolled(e);
 
-		this.scale = 1 + delta*0.1;
-		this.cumScale = this.cumScale*this.scale;
-
-		this.frameScale = 1/this.cumScale;
+		this.setCurrentDepthForCanvas(delta);
 		this.viewer.drawLoop(this.mouse_x, this.mouse_y, this.current_depth);
 
 		return false;
@@ -130,13 +150,20 @@ export default class Controller {
   }
 
   mouseUpHandler(e) {
-		this.drag = false;
+    this.drag = false;
+    this.recordXYValues(this.mouse_x, this.mouse_y);
+  }
+
+  recordXYValues(x, y) {
+    this.mouse_selected_x = x;
+    this.mouse_selected_y = y;
+    console.log(x, y);
+    updateXYValuesUI(x, y);
   }
 
 	addListeners() {
 		this.canvasRef.onmousemove = (this.mouseMoveHandler).bind(this);
-    // TODO: Re-do zoom feature
-    // this.canvasRef.onmousewheel = (this.mouseWheelHandler).bind(this);
+    this.canvasRef.onmousewheel = (this.mouseWheelHandler).bind(this);
 		this.canvasRef.onmousedown = (this.mouseDownHandler).bind(this);
 		this.canvasRef.onmouseup = (this.mouseUpHandler).bind(this);
 	}

@@ -8,8 +8,8 @@ export default class Viewer {
       this.setupImageStorage(canvas_size);
 
       // How much to offset image
-      this.offset_x = this.canvasRef.offsetLeft;
-      this.offset_y = this.canvasRef.offsetTop;
+      this.offset_x = 0;
+      this.offset_y = 0;
     }
 
     setupCanvas(name) {

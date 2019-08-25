@@ -6,7 +6,7 @@ import Controller from "/js/controller.js";
 export default class ArkPlace{
   constructor(name, canvas_size) {
     // TODO: Initialize CanvasHandler object
-    let canvasObj = new Controller(name, canvas_size);
+    this.canvasObj = new Controller(name, canvas_size);
     this.data;
     var peersJsonFile = "/peers.json";
     loadJSON(this.callbackPeersReceived, peersJsonFile);
@@ -19,11 +19,47 @@ export default class ArkPlace{
     console.log(actual_JSON[1].ip);
   }
 
+  updateImage() {
+    this.canvasObj.updateImage();
+  }
+
+  getFormValues() {
+    var depth = document.getElementsByName("formDepth")[0].value;
+    var x = document.getElementsByName("formX")[0].value;
+    var y = document.getElementsByName("formY")[0].value;
+    var color = document.getElementsByName("formColor")[0].value;
+    return {x, y, depth, color};
+  }
+
+  pixelErase(x, y, depth) {
+    this.drawOnCanvas(x, y, depth, "#777777", false);
+    this.updateImage();
+  }
+
   // ----------------------------------------------------------------------
   // Editing
-  // TODO: Set depth
-  // TODO: Set pixel
+  // Set depth
+  setDepth(depth) {
+    this.canvasObj.setDepth(depth);
+  }
+
   // TODO: Set pixel values
+  updatePixel(x, y, depth, color) {
+    this.drawOnCanvas(x, y, depth, color);
+    this.updateImage();
+  }
+
+  // Submit pixel
+  pixelSubmit() {
+    let {x, y, depth, color} = this.getFormValues();
+    // TODO: prepare transaction
+    // TODO: submit transaction
+
+    // TODO: this is not necessary when using transaction
+    this.updatePixel(x, y, depth, color);
+    console.log({x, y, depth, color});
+  }
+
   // TODO: Make transaction
 
   // ----------------------------------------------------------------------
@@ -48,8 +84,16 @@ export default class ArkPlace{
   // TODO: Get canvas status
   // TODO: Get topic
 
+  // ----------------------------------------------------------------------
   // User commands
-  // TODO: Draw on canvas
+  // Draw on canvas
+  drawOnCanvas(x, y, depth, color, visible = true) {
+    // Make sure all required values are defined
+    if (x && y && depth && color) {
+      this.canvasObj.updateDenseTreeItem(x, y, depth, color, visible);
+      this.canvasObj.updateImage();
+    }
+  }
 
   // Admin commands
   // TODO: Freeze canvas

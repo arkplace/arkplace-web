@@ -35,3 +35,13 @@ export function loadJSON(callback, filename) {
     };
     xobj.send(null);
  }
+
+export function updateXYValuesUI(x, y) {
+  document.getElementsByName("formX")[0].value = x;
+  document.getElementsByName("formY")[0].value = y;
+}
+
+export function updateDepthValuesUI(depth) {
+  document.getElementsByName("formDepth")[0].value = depth;
+  ap.setDepth(depth);
+}
