@@ -80,7 +80,6 @@ export default class Controller {
         var x = this.quad_.getXValueFromIndex(i);
         var y = this.quad_.getYValueFromIndex(i);
         var depth = this.quad_.getDepthFromIndex(i);
-        console.log(x, y, depth, tempItem.colorVal);
       }
     }
     var qixel = new QixelWithDepth(0, 0, 0, "");
