@@ -101,7 +101,6 @@ export default class Controller {
     else if(d > this.maxDepth_) {
       d = this.maxDepth_;
     }
-    console.log(d);
     updateDepthValuesUI(d);
 	}
 
