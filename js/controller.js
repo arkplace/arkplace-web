@@ -159,7 +159,6 @@ export default class Controller {
   recordXYValues(x, y) {
     this.mouseSelectedX_ = x;
     this.mouseSelectedY_ = y;
-    console.log(x, y);
     updateXYValuesUI(x, y);
   }
 
