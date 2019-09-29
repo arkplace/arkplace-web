@@ -82,26 +82,31 @@ export default class Viewer {
     }
 
     paintQuadOnCanvas(qixel, offset_pt, to_fill) {
+        var ctx = this.selectCanvasCtx(to_fill, ctx, qixel);
+        this.ctxMakeDrawable(ctx, qixel, offset_pt);
+        this.ctxCreateRect(ctx, qixel, offset_pt);
+        this.ctxFillOrStroke(to_fill, ctx, qixel);
+        this.ctxMakeUndrawable(ctx);
+    }
+
+    ctxFillOrStroke(to_fill, ctx, qixel) {
         if (to_fill) {
-            this.paintRectFillToCtx(this.imgctx_, qixel, offset_pt);
-        } else {
-            qixel.color = "#F00";
-            this.paintRectStrokeToCtx(this.ctx_, qixel, offset_pt);
+            this.fillRectOnCtx(ctx, qixel);
+        }
+        else {
+            this.strokeRectOnCtx(ctx, qixel);
         }
     }
 
-    paintRectStrokeToCtx(ctx, qixel, offset_pt) {
-        this.paintCtxInit(ctx, qixel, offset_pt);
-        this.createRectOnCtx(ctx, qixel, offset_pt);
-        this.strokeRectOnCtx(ctx, qixel);
-        this.paintCtxDeinit(ctx);
-    }
-
-    paintRectFillToCtx(ctx, qixel, offset_pt) {
-        this.paintCtxInit(ctx);
-        this.createRectOnCtx(ctx, qixel, offset_pt);
-        this.fillRectOnCtx(ctx, qixel);
-        this.paintCtxDeinit(ctx);
+    selectCanvasCtx(to_fill, ctx, qixel) {
+        if (to_fill) {
+            ctx = this.imgctx_;
+        }
+        else {
+            qixel.color = "#F00";
+            ctx = this.ctx_;
+        }
+        return ctx;
     }
 
     strokeRectOnCtx(ctx, qixel) {
@@ -114,15 +119,15 @@ export default class Viewer {
         ctx.fillRect(qixel.point.x, qixel.point.y, qixel.size, qixel.size);
     }
 
-    createRectOnCtx(ctx, qixel, offsetPt) {
+    ctxCreateRect(ctx, qixel, offsetPt) {
         ctx.rect(qixel.point.x + offsetPt.x, qixel.point.y + offsetPt.y, qixel.size, qixel.size);
     }
 
-    paintCtxDeinit(ctx) {
+    ctxMakeUndrawable(ctx) {
         ctx.closePath();
     }
 
-    paintCtxInit(ctx) {
+    ctxMakeDrawable(ctx) {
         ctx.beginPath();
     }
 
@@ -136,8 +141,6 @@ export default class Viewer {
     drawQuadTreeElementGeneric(qixel, offset_pt, to_fill) {
         if (this.outOfBounds(qixel.point)) 
             return;
-        
-
 
         const {cx, cy, s} = this.prepareForDrawing(qixel);
         var newQixel = new QixelWithSize(cx, cy, s, qixel.color);
