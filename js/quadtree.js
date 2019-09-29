@@ -1,10 +1,10 @@
 export default class DenseQuadTree {
-    constructor(canvas_size) {
-        this.canvas_size = canvas_size;
-        this.max_depth = this.log2(canvas_size);
-        this.bf = 4;
-        this.qtitems = this.getQuadTreeSize(this.max_depth);
-        this.storage = Array(this.qtitems);
+    constructor(canvasSize) {
+        this.canvasSize_ = canvasSize;
+        this.maxDepth_ = this.log2(canvasSize);
+        this.bf_ = 4;
+        this.qtitems_ = this.getQuadTreeSize(this.maxDepth_);
+        this.storage_ = Array(this.qtitems_);
     }
 
     createNewItem() {
@@ -22,35 +22,35 @@ export default class DenseQuadTree {
 
     getPrevOffsetFromIndex(index) {
         var depth = this.getDepthFromIndex(index);
-        var offset_prev = this.getQuadTreeSize(depth);
-        return offset_prev;
+        var offsetPrev = this.getQuadTreeSize(depth);
+        return offsetPrev;
     }
 
-    getQuadTreeSize(depth = this.max_depth) {
+    getQuadTreeSize(depth = this.maxDepth_) {
         if (depth < 0) 
             return 0;
         
-        return Math.floor((1 - Math.pow(this.bf, depth)) / (1 - this.bf));
+        return Math.floor((1 - Math.pow(this.bf_, depth)) / (1 - this.bf_));
     }
 
     getXValueFromIndex(index) {
         var depth = this.getDepthFromIndex(index);
-        var offset_prev = this.getPrevOffsetFromIndex(index);
-        var step = this.canvas_size / Math.pow(2, depth);
-        var x = ((index - offset_prev) % Math.pow(2, depth)) * step;
+        var offsetPrev = this.getPrevOffsetFromIndex(index);
+        var step = this.canvasSize_ / Math.pow(2, depth);
+        var x = ((index - offsetPrev) % Math.pow(2, depth)) * step;
         return x;
     }
 
     getYValueFromIndex(index) {
         var depth = this.getDepthFromIndex(index);
-        var offset_prev = this.getPrevOffsetFromIndex(index);
-        var step = this.canvas_size / Math.pow(2, depth);
-        var y = (index - offset_prev) * step / Math.pow(2, depth);
+        var offsetPrev = this.getPrevOffsetFromIndex(index);
+        var step = this.canvasSize_ / Math.pow(2, depth);
+        var y = (index - offsetPrev) * step / Math.pow(2, depth);
         return Math.floor(y);
     }
 
     getDepthFromIndex(index) {
-        return Math.floor(Math.log(1 - index * (1 - this.bf)) / Math.log(this.bf));
+        return Math.floor(Math.log(1 - index * (1 - this.bf_)) / Math.log(this.bf_));
     }
 
     getPosFromIndex(index) {
@@ -62,10 +62,10 @@ export default class DenseQuadTree {
     }
 
     getIndexFromPos(x, y, depth) {
-        var offset_prev = this.getQuadTreeSize(depth);
-        var step = this.canvas_size / Math.pow(2, depth);
-        var offset_cur = Math.floor(y / step) * Math.pow(2, depth) + Math.floor(x / step);
-        var index = offset_prev + offset_cur;
+        var offsetPrev = this.getQuadTreeSize(depth);
+        var step = this.canvasSize_ / Math.pow(2, depth);
+        var offsetCur = Math.floor(y / step) * Math.pow(2, depth) + Math.floor(x / step);
+        var index = offsetPrev + offsetCur;
         return index;
     }
 
@@ -73,19 +73,19 @@ export default class DenseQuadTree {
         var idx = this.getIndexFromPos(x, y, depth);
 
         // If uninitialized
-        if (typeof this.storage[idx] === 'undefined') {
-            this.storage[idx] = this.createNewItem();
+        if (typeof this.storage_[idx] === 'undefined') {
+            this.storage_[idx] = this.createNewItem();
         }
-        this.storage[idx].useCount ++;
-        this.storage[idx].colorVal = color;
-        this.storage[idx].visible = visible;
+        this.storage_[idx].useCount ++;
+        this.storage_[idx].colorVal = color;
+        this.storage_[idx].visible = visible;
     }
 
     getDenseQuadTreeItemByIndex(index) { // If uninitialized
-        if (typeof this.storage[index] === 'undefined') {
+        if (typeof this.storage_[index] === 'undefined') {
             return this.createNewItem();
         } else {
-            return this.storage[index];
+            return this.storage_[index];
         }
     }
 

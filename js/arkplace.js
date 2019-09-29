@@ -4,12 +4,12 @@ import { loadJSON } from "/js/utils.js";
 import Controller from "/js/controller.js";
 
 export default class ArkPlace {
-  constructor(name, canvas_size) {
+  constructor(name, canvasSize) {
     // TODO: Initialize CanvasHandler object
-    this.canvasObj = new Controller(name, canvas_size);
-    this.data;
-    var peersJsonFile = "/peers.json";
-    loadJSON(this.callbackPeersReceived, peersJsonFile);
+    this.canvasObj_ = new Controller(name, canvasSize);
+    this.data_;
+    var peersJsonFile_ = "/peers.json";
+    loadJSON(this.callbackPeersReceived, peersJsonFile_);
 
     // TODO: Hardcode network parameters and app constants
   }
@@ -20,7 +20,7 @@ export default class ArkPlace {
   }
 
   updateImage() {
-    this.canvasObj.updateImage();
+    this.canvasObj_.updateImage();
   }
 
   getFormValues() {
@@ -40,7 +40,7 @@ export default class ArkPlace {
   // Editing
   // Set depth
   setDepth(depth) {
-    this.canvasObj.setDepth(depth);
+    this.canvasObj_.setDepth(depth);
   }
 
   // TODO: Set pixel values
@@ -90,8 +90,8 @@ export default class ArkPlace {
   drawOnCanvas(x, y, depth, color, visible = true) {
     // Make sure all required values are defined
     if (x && y && depth && color) {
-      this.canvasObj.updateDenseTreeItem(x, y, depth, color, visible);
-      this.canvasObj.updateImage();
+      this.canvasObj_.updateDenseTreeItem(x, y, depth, color, visible);
+      this.canvasObj_.updateImage();
     }
   }
 

@@ -6,12 +6,12 @@ export function genRandomIntInsecure(N) {
 }
 
 // TODO: Move bootstrap to ArkPlace class constructor
-export function canvasBootstrap(controller, canvas_size) {
+export function canvasBootstrap(controller, canvasSize) {
   // TODO: Get data from blockchain
   // Generate test data
   for (var i = 0; i < 10000; i++) {
-    var x = genRandomIntInsecure(canvas_size);
-    var y = genRandomIntInsecure(canvas_size);
+    var x = genRandomIntInsecure(canvasSize);
+    var y = genRandomIntInsecure(canvasSize);
     var depth = genRandomIntInsecure(10);
     controller.updateDenseTreeItem(x, y, depth,
       'rgb(' + genRandomIntInsecure(255) + ',' +

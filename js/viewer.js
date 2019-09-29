@@ -14,17 +14,17 @@ export default class Viewer {
     }
 
     setupCanvas(name) {
-        this.canvasRef = document.getElementById(name);
-        this.ctx = this.canvasRef.getContext("2d");
-        this.canvasRef.height = document.body.offsetHeight;
-        this.canvasRef.width = document.body.offsetWidth;
+        this.canvasRef_ = document.getElementById(name);
+        this.ctx_ = this.canvasRef_.getContext("2d");
+        this.canvasRef_.height = document.body.offsetHeight;
+        this.canvasRef_.width = document.body.offsetWidth;
     }
 
     setupImageStorage(canvasSize_) {
-        this.img = document.createElement('canvas');
-        this.img.height = canvasSize_;
-        this.img.width = canvasSize_;
-        this.imgctx = this.img.getContext('2d');
+        this.img_ = document.createElement('canvas');
+        this.img_.height = canvasSize_;
+        this.img_.width = canvasSize_;
+        this.imgctx_ = this.img_.getContext('2d');
     }
 
     setOffsets(x, y) {
@@ -37,15 +37,15 @@ export default class Viewer {
     }
 
     copyFromImage() {
-        return this.imgctx.getImageData(0, 0, this.canvasSize_, this.canvasSize_);
+        return this.imgctx_.getImageData(0, 0, this.canvasSize_, this.canvasSize_);
     }
 
     clearImage() {
-        this.imgctx.clearRect(0, 0, this.canvasRef.width, this.canvasRef.height);
+        this.imgctx_.clearRect(0, 0, this.canvasRef_.width, this.canvasRef_.height);
     }
 
     clearCanvas() {
-        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+        this.ctx_.clearRect(0, 0, this.ctx_.canvas.width, this.ctx_.canvas.height);
     }
 
     drawLoop(qixel) {
@@ -53,7 +53,7 @@ export default class Viewer {
 
         // Copy pixels from image holder and display on main canvas
         var imageData = this.copyFromImage();
-        this.ctx.putImageData(imageData, this.offsetX_, this.offsetY_);
+        this.ctx_.putImageData(imageData, this.offsetX_, this.offsetY_);
         this.drawOverLayIndicator(qixel);
     }
 
@@ -83,10 +83,10 @@ export default class Viewer {
 
     paintQuadOnCanvas(qixel, offset_pt, to_fill) {
         if (to_fill) {
-            this.paintRectFillToCtx(this.imgctx, qixel, offset_pt);
+            this.paintRectFillToCtx(this.imgctx_, qixel, offset_pt);
         } else {
             qixel.color = "#F00";
-            this.paintRectStrokeToCtx(this.ctx, qixel, offset_pt);
+            this.paintRectStrokeToCtx(this.ctx_, qixel, offset_pt);
         }
     }
 
