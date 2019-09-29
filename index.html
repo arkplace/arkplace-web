@@ -3,10 +3,12 @@
 	<head>
     <script src="js/color-picker.min.js"></script>
 		<script type="module" src="js/utils.js"></script>
+		<script type="module" src="js/commonTypes.js"></script>
 		<script type="module" src="js/quadtree.js"></script>
 		<script type="module" src="js/controller.js"></script>
 		<script type="module" src="js/viewer.js"></script>
     <script type="module">
+      import {Point, QixelWithDepth, QixelWithSize} from "/js/commonTypes.js";
       import ArkPlace from "/js/arkplace.js";
       import {canvasBootstrap} from "/js/utils.js";
       window.ap = new ArkPlace("defaultCanvas", 1024);

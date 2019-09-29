@@ -1,145 +1,154 @@
+import {Point, QixelWithDepth, QixelWithSize} from "/js/commonTypes.js";
+
 export default class Viewer {
-    constructor(name, canvas_size) {
-      // Canvas related variables
-      this.canvas_size = canvas_size;
+    constructor(name, canvasSize) { // Canvas related variables
+        this.canvasSize_ = canvasSize;
 
-      // Setup canvas and context
-      this.setupCanvas(name);
-      this.setupImageStorage(canvas_size);
+        // Setup canvas and context
+        this.setupCanvas(name);
+        this.setupImageStorage(canvasSize);
 
-      // How much to offset image
-      this.offset_x = 0;
-      this.offset_y = 0;
+        // How much to offset image
+        this.offsetX_ = 0;
+        this.offsetY_ = 0;
     }
 
     setupCanvas(name) {
-      this.canvasRef = document.getElementById(name);
-      this.ctx = this.canvasRef.getContext("2d");
-      this.canvasRef.height = document.body.offsetHeight;
-      this.canvasRef.width = document.body.offsetWidth;
+        this.canvasRef = document.getElementById(name);
+        this.ctx = this.canvasRef.getContext("2d");
+        this.canvasRef.height = document.body.offsetHeight;
+        this.canvasRef.width = document.body.offsetWidth;
     }
 
-    setupImageStorage(canvas_size) {
-      this.img = document.createElement('canvas');
-      this.img.height = canvas_size;
-      this.img.width = canvas_size;
-      this.imgctx = this.img.getContext('2d');
+    setupImageStorage(canvasSize_) {
+        this.img = document.createElement('canvas');
+        this.img.height = canvasSize_;
+        this.img.width = canvasSize_;
+        this.imgctx = this.img.getContext('2d');
     }
 
     setOffsets(x, y) {
-      this.offset_x = x;
-      this.offset_y = y;
+        this.offsetX_ = x;
+        this.offsetY_ = y;
     }
 
     getOffsets() {
-      return {ox: this.offset_x, oy: this.offset_y};
+        return {ox: this.offsetX_, oy: this.offsetY_};
     }
 
     copyFromImage() {
-  		return this.imgctx.getImageData(0,
-																			0,
-																			this.canvas_size,
-																			this.canvas_size);
+        return this.imgctx.getImageData(0, 0, this.canvasSize_, this.canvasSize_);
     }
 
     clearImage() {
-      this.imgctx.clearRect(0,
-                            0,
-                            this.canvasRef.width,
-                            this.canvasRef.height);
+        this.imgctx.clearRect(0, 0, this.canvasRef.width, this.canvasRef.height);
     }
 
     clearCanvas() {
-      this.ctx.clearRect(0,
-                        0,
-                        this.ctx.canvas.width,
-                        this.ctx.canvas.height);
+        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
 
-    drawLoop(mx, my, depth) {
-      this.clearCanvas();
+    drawLoop(qixel) {
+        this.clearCanvas();
 
-      // Copy pixels from image holder and display on main canvas
-      var imageData = this.copyFromImage();
-  		this.ctx.putImageData(imageData, this.offset_x, this.offset_y);
-
-  		var color = "#F00";
-  		// Draw UI selected region highlight
-  		this.drawQuadTreeElementOutline(mx - this.offset_x,
-  																		my - this.offset_y,
-                                      depth,
-  																		this.offset_x,
-  																		this.offset_y,
-  																		color,
-  																		false);
+        // Copy pixels from image holder and display on main canvas
+        var imageData = this.copyFromImage();
+        this.ctx.putImageData(imageData, this.offsetX_, this.offsetY_);
+        this.drawOverLayIndicator(qixel);
     }
 
-    outOfBounds(x, y) {
-      return (x < 0
-          || y < 0
-          || x > this.canvas_size
-          || y > this.canvas_size);
+    drawOverLayIndicator(qixel) { // Draw UI selected region highlight
+        var color = "#F00";
+        var offsetPt = new Point(this.offsetX_, this.offsetY_);
+        var newQixel = new QixelWithDepth(qixel.point.x - offsetPt.x, qixel.point.y - offsetPt.y, qixel.depth, color);
+        this.drawQuadTreeElementOutline(newQixel, offsetPt, false);
+    }
+
+    outOfBounds(point) {
+        return(point.x < 0 || point.y < 0 || point.x > this.canvasSize_ || point.y > this.canvasSize_);
     }
 
     getQuadSizeAtDepth(depth) {
-      return this.canvas_size/(Math.pow(2, depth));
+        return this.canvasSize_ / (Math.pow(2, depth));
     }
 
     getQuadOffsetOfPixel(pixel_val, step) {
-      return Math.floor(pixel_val/step)*step;
+        return Math.floor(pixel_val / step) * step;
     }
 
     commitToImage(x, y, depth, item) {
-  		this.drawQuadTreeElement(x,
-															y,
-                              depth,
-															item.colorVal);
-  	}
-
-    paintQuadOnCanvas(rect_x, rect_y, size, offset_x, offset_y, color, to_fill) {
-      if (to_fill) {
-        this.imgctx.beginPath();
-        this.imgctx.rect(rect_x + offset_x,
-                      rect_y + offset_y,
-                      size,
-                      size);
-        // Get pixel value from quadtree element
-        this.imgctx.fillStyle = color;
-        this.imgctx.fillRect(rect_x, rect_y, size, size);
-        this.imgctx.closePath();
-      }
-      else {
-        this.ctx.beginPath();
-        this.ctx.rect(rect_x + offset_x,
-                      rect_y + offset_y,
-                      size,
-                      size);
-        this.ctx.strokeStyle = color;
-        this.ctx.stroke();
-        this.ctx.closePath();
-      }
+        var qixel = new QixelWithDepth(x, y, depth, item.colorVal);
+        this.drawQuadTreeElement(qixel);
     }
 
-    prepareForDrawing(x, y, depth) {
-      var s = this.getQuadSizeAtDepth(depth);
-      var cx = this.getQuadOffsetOfPixel(x, s);
-      var cy = this.getQuadOffsetOfPixel(y, s);
-      return {cx, cy, s};
+    paintQuadOnCanvas(qixel, offset_pt, to_fill) {
+        if (to_fill) {
+            this.paintRectFillToCtx(this.imgctx, qixel, offset_pt);
+        } else {
+            qixel.color = "#F00";
+            this.paintRectStrokeToCtx(this.ctx, qixel, offset_pt);
+        }
     }
 
-  	drawQuadTreeElementGeneric(x, y, depth, ox, oy,  pixel_color, to_fill) {
-      if (this.outOfBounds(x, y))
-        return;
+    paintRectStrokeToCtx(ctx, qixel, offset_pt) {
+        this.paintCtxInit(ctx, qixel, offset_pt);
+        this.createRectOnCtx(ctx, qixel, offset_pt);
+        this.strokeRectOnCtx(ctx, qixel);
+        this.paintCtxDeinit(ctx);
+    }
 
-      const {cx, cy, s} = this.prepareForDrawing(x, y, depth);
-      this.paintQuadOnCanvas(cx, cy, s, ox, oy,  pixel_color, to_fill);
-  	}
+    paintRectFillToCtx(ctx, qixel, offset_pt) {
+        this.paintCtxInit(ctx);
+        this.createRectOnCtx(ctx, qixel, offset_pt);
+        this.fillRectOnCtx(ctx, qixel);
+        this.paintCtxDeinit(ctx);
+    }
 
-    drawQuadTreeElement(x, y, depth, pixel_color) {
-      this.drawQuadTreeElementGeneric(x, y, depth, 0, 0, pixel_color, true);
-  	}
+    strokeRectOnCtx(ctx, qixel) {
+        ctx.strokeStyle = qixel.color;
+        ctx.stroke();
+    }
 
-    drawQuadTreeElementOutline(x, y, depth, offset_x, offset_y, pixel_color) {
-      this.drawQuadTreeElementGeneric(x, y, depth, offset_x, offset_y, pixel_color, false);
-  	}
+    fillRectOnCtx(ctx, qixel) {
+        ctx.fillStyle = qixel.color;
+        ctx.fillRect(qixel.point.x, qixel.point.y, qixel.size, qixel.size);
+    }
+
+    createRectOnCtx(ctx, qixel, offsetPt) {
+        ctx.rect(qixel.point.x + offsetPt.x, qixel.point.y + offsetPt.y, qixel.size, qixel.size);
+    }
+
+    paintCtxDeinit(ctx) {
+        ctx.closePath();
+    }
+
+    paintCtxInit(ctx) {
+        ctx.beginPath();
+    }
+
+    prepareForDrawing(qixel) {
+        var s = this.getQuadSizeAtDepth(qixel.depth);
+        var cx = this.getQuadOffsetOfPixel(qixel.point.x, s);
+        var cy = this.getQuadOffsetOfPixel(qixel.point.y, s);
+        return {cx, cy, s};
+    }
+
+    drawQuadTreeElementGeneric(qixel, offset_pt, to_fill) {
+        if (this.outOfBounds(qixel.point)) 
+            return;
+        
+
+        const {cx, cy, s} = this.prepareForDrawing(qixel);
+        var newQixel = new QixelWithSize(cx, cy, s, qixel.color);
+        this.paintQuadOnCanvas(newQixel, offset_pt, to_fill);
+    }
+
+    drawQuadTreeElement(qixel) {
+        var zeroPt = new Point(0, 0);
+        this.drawQuadTreeElementGeneric(qixel, zeroPt, true);
+    }
+
+    drawQuadTreeElementOutline(qixel, offsetPt) {
+        this.drawQuadTreeElementGeneric(qixel, offsetPt, false);
+    }
 };

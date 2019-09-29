@@ -2,7 +2,8 @@
 // TODO: Separate Drawing (view) functionality from UI (control)
 // TODO: Provide interface for Arkplace main class to call
 
-import {canvasBootstrap, genRandomIntInsecure, updateXYValuesUI, updateDepthValuesUI} from "/js/utils.js";
+import {updateXYValuesUI, updateDepthValuesUI} from "/js/utils.js";
+import {QixelWithDepth} from "/js/commonTypes.js";
 import DenseQuadTree from "/js/quadtree.js";
 import Viewer from "/js/viewer.js";
 
@@ -82,8 +83,9 @@ export default class Controller {
         console.log(x, y, depth, tempItem.colorVal);
       }
     }
+    var qixel = new QixelWithDepth(0, 0, 0, "");
     // Render
-  	this.viewer.drawLoop(0, 0, 0);
+  	this.viewer.drawLoop(qixel);
   }
 
   commitToImage(index, item) {
@@ -122,8 +124,9 @@ export default class Controller {
 		var e = window.event || e; // old IE support
 		var delta = this.getWheelRolled(e);
 
-		this.setCurrentDepthForCanvas(delta);
-		this.viewer.drawLoop(this.mouse_x, this.mouse_y, this.current_depth);
+    this.setCurrentDepthForCanvas(delta);
+    var qixel = new QixelWithDepth(this.mouse_x, this.mouse_y, this.current_depth, "");
+		this.viewer.drawLoop(qixel);
 
 		return false;
 	}
@@ -137,7 +140,8 @@ export default class Controller {
                              this.mouse_y - this.start_y);
     }
 
-    this.viewer.drawLoop(this.mouse_x, this.mouse_y, this.current_depth);
+    var qixel = new QixelWithDepth(this.mouse_x, this.mouse_y, this.current_depth, "");
+		this.viewer.drawLoop(qixel);
   }
 
   mouseDownHandler(e) {

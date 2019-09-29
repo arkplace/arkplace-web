@@ -1,9 +1,9 @@
 // TODO: Implements model layer containing business logic
 
-import {loadJSON} from "/js/utils.js";
+import { loadJSON } from "/js/utils.js";
 import Controller from "/js/controller.js";
 
-export default class ArkPlace{
+export default class ArkPlace {
   constructor(name, canvas_size) {
     // TODO: Initialize CanvasHandler object
     this.canvasObj = new Controller(name, canvas_size);
@@ -28,7 +28,7 @@ export default class ArkPlace{
     var x = document.getElementsByName("formX")[0].value;
     var y = document.getElementsByName("formY")[0].value;
     var color = document.getElementsByName("formColor")[0].value;
-    return {x, y, depth, color};
+    return { x, y, depth, color };
   }
 
   pixelErase(x, y, depth) {
@@ -51,13 +51,13 @@ export default class ArkPlace{
 
   // Submit pixel
   pixelSubmit() {
-    let {x, y, depth, color} = this.getFormValues();
+    let { x, y, depth, color } = this.getFormValues();
     // TODO: prepare transaction
     // TODO: submit transaction
 
     // TODO: this is not necessary when using transaction
     this.updatePixel(x, y, depth, color);
-    console.log({x, y, depth, color});
+    console.log({ x, y, depth, color });
   }
 
   // TODO: Make transaction
