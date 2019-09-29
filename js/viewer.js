@@ -138,6 +138,7 @@ export default class Viewer {
             return;
         
 
+
         const {cx, cy, s} = this.prepareForDrawing(qixel);
         var newQixel = new QixelWithSize(cx, cy, s, qixel.color);
         this.paintQuadOnCanvas(newQixel, offset_pt, to_fill);

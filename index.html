@@ -1,64 +1,61 @@
-<!DOCTYPE html>
-<html>
-	<head>
-    <script src="js/color-picker.min.js"></script>
-		<script type="module" src="js/utils.js"></script>
-		<script type="module" src="js/commonTypes.js"></script>
-		<script type="module" src="js/quadtree.js"></script>
-		<script type="module" src="js/controller.js"></script>
-		<script type="module" src="js/viewer.js"></script>
-    <script type="module">
-      import {Point, QixelWithDepth, QixelWithSize} from "/js/commonTypes.js";
-      import ArkPlace from "/js/arkplace.js";
-      import {canvasBootstrap} from "/js/utils.js";
-      window.ap = new ArkPlace("defaultCanvas", 1024);
-    </script>
-		<link rel="stylesheet" type="text/css" href="css/front.css">
-    <link href="css/color-picker.min.css" rel="stylesheet">
-	</head>
-	<body>
-    <div id="bodyWrap">
-      <div id="header">
-      </div>
-      <div id="contentMain">
-    		<div id="canvasWrap">
-    			<canvas id="defaultCanvas"></canvas>
-    		</div>
-        <div id="sidePanel">
-          <form id="inputForm">
-            <div id="colorPicker"></div><br>
-            <input type="range" min="0" max="10" value="0" name="formDepth" placeholder="depth" oninput="ap.setDepth(this.value)" onchange="ap.setDepth(this.value)"><br>
-            <input type="textbox" name="formColor" placeholder="color"><br>
-            <input type="textbox" name="formX" placeholder="x" value="0" size="7">
-            <input type="textbox" name="formY" placeholder="y" value="0" size="7"><br>
-            <input type="button" name="submit" value="Submit" onclick="ap.pixelSubmit()">
-            <input type="button" name="erase" value="Erase" onclick="ap.pixelErase()">
-          </form>
+< !DOCTYPE html > <html>
+    <head>
+        <script src="js/color-picker.min.js"></script>
+        <script src="js/utils.js" type="module"></script>
+        <script src="js/commonTypes.js" type="module"></script>
+        <script src="js/quadtree.js" type="module"></script>
+        <script src="js/controller.js" type="module"></script>
+        <script src="js/viewer.js" type="module"></script>
+        <script type="module">
+            import {Point, QixelWithDepth, QixelWithSize} from "/js/commonTypes.js";
+            import ArkPlace from "/js/arkplace.js";
+            import {canvasBootstrap} from "/js/utils.js";
+            window.ap = new ArkPlace("defaultCanvas", 1024);
+        </script>
+        <link href="css/front.css" rel="stylesheet" type="text/css">
+        <link href="css/color-picker.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div id="bodyWrap">
+            <div id="header"></div>
+            <div id="contentMain">
+                <div id="canvasWrap">
+                    <canvas id="defaultCanvas"></canvas>
+                </div>
+                <div id="sidePanel">
+                    <form id="inputForm">
+                        <div id="colorPicker"></div><br>
+                        <input max="10" min="0" name="formDepth" onchange="ap.setDepth(this.value)" oninput="ap.setDepth(this.value)" placeholder="depth" type="range" value="0"><br>
+                        <input name="formColor" placeholder="color" type="textbox"><br>
+                        <input name="formX" placeholder="x" size="7" type="textbox" value="0">
+                        <input name="formY" placeholder="y" size="7" type="textbox" value="0"><br>
+                        <input name="submit" onclick="ap.pixelSubmit()" type="button" value="Submit">
+                        <input name="erase" onclick="ap.pixelErase()" type="button" value="Erase">
+                    </form>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-	</body>
-  <script>
-  var container = document.querySelector('#colorPicker'),
-      source = document.querySelector('input[name="formColor"]'),
-      picker = new CP(source, false, container);
+    </body>
+    <script>
+        var container = document.querySelector('#colorPicker'),
+            source = document.querySelector('input[name="formColor"]'),
+            picker = new CP(source, false, container);
 
-  picker.fit = function() {
-    this.self.style.left = this.self.style.top = "";
-  };
-  picker.on("change", function(color) {
-      this.source.value = '#' + color;
-  });
-  picker.enter();
+        picker.fit = function () {
+            this.self.style.left = this.self.style.top = "";
+        };
+        picker.on("change", function (color) {
+            this.source.value = '#' + color;
+        });
+        picker.enter();
 
-  document.addEventListener('keydown', keyDownCallback);
+        document.addEventListener('keydown', keyDownCallback);
 
-  function keyDownCallback(evt){
-    if (evt.keyCode==32){
-      evt.preventDefault();
-      ap.pixelSubmit();
-    }
-  }
-
-  </script>
+        function keyDownCallback(evt) {
+            if (evt.keyCode == 32) {
+                evt.preventDefault();
+                ap.pixelSubmit();
+            }
+        }
+    </script>
 </html>

@@ -30,6 +30,7 @@ export default class DenseQuadTree {
         if (depth < 0) 
             return 0;
         
+
         return Math.floor((1 - Math.pow(this.bf_, depth)) / (1 - this.bf_));
     }
 
