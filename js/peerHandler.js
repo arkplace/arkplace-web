@@ -1,6 +1,6 @@
 export default class PeerHandler {
   constructor() {
-    var this.peers;
+    this.peers = 0;
   }
 
   // TODO: Should check if API is open once when the IP is added
