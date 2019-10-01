@@ -4,10 +4,10 @@
 
 import {updateXYValuesUI, updateDepthValuesUI} from "/js/utils.js";
 import {QixelWithDepth} from "/js/commonTypes.js";
-import DenseQuadTree from "/js/quadtree.js";
-import Viewer from "/js/viewer.js";
+import {DenseQuadTree} from "/js/quadtree.js";
+import {Viewer} from "/js/viewer.js";
 
-export default class Controller {
+export class CanvasHandler {
     constructor(name, canvasSize, canvas_offset) { // Setup canvas and context
         this.canvasRef_ = document.getElementById(name);
         this.ctx_ = this.canvasRef_.getContext("2d");
