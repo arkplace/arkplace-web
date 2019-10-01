@@ -1,4 +1,4 @@
-export default class DenseQuadTree {
+export class DenseQuadTree {
     constructor(canvasSize) {
         this.canvasSize_ = canvasSize;
         this.maxDepth_ = this.log2(canvasSize);

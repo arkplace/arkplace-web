@@ -1,6 +1,6 @@
 import {Point, QixelWithDepth, QixelWithSize} from "/js/commonTypes.js";
 
-export default class Viewer {
+export class Viewer {
     constructor(name, canvasSize) { // Canvas related variables
         this.canvasSize_ = canvasSize;
 

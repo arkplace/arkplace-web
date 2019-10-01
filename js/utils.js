@@ -1,21 +1,18 @@
-import CanvasHandler from "/js/controller.js";
-import Viewer from "/js/viewer.js";
-
 export function genRandomIntInsecure(N) {
     return Math.floor(Math.random() * N);
 }
 
 // TODO: Move bootstrap to ArkPlace class constructor
-export function canvasBootstrap(controller, canvasSize) {
+export function canvasBootstrap(canvasHandler, canvasSize) {
     // TODO: Get data from blockchain
     // Generate test data
     for (var i = 0; i < 10000; i++) {
         var x = genRandomIntInsecure(canvasSize);
         var y = genRandomIntInsecure(canvasSize);
         var depth = genRandomIntInsecure(10);
-        controller.updateDenseTreeItem(x, y, depth, 'rgb(' + genRandomIntInsecure(255) + ',' + genRandomIntInsecure(255) + ',' + genRandomIntInsecure(255) + ')', true);
+        canvasHandler.updateDenseTreeItem(x, y, depth, 'rgb(' + genRandomIntInsecure(255) + ',' + genRandomIntInsecure(255) + ',' + genRandomIntInsecure(255) + ')', true);
     }
-    controller.updateImage();
+    canvasHandler.updateImage();
 
 }
 

@@ -1,11 +1,11 @@
 // TODO: Implements model layer containing business logic
 
 import {loadJSON} from "/js/utils.js";
-import Controller from "/js/controller.js";
+import {CanvasHandler} from "/js/canvasHandler.js";
 
-export default class ArkPlace {
+export class ArkPlace {
     constructor(name, canvasSize) { // TODO: Initialize CanvasHandler object
-        this.canvasObj_ = new Controller(name, canvasSize);
+        this.canvasHandler_ = new CanvasHandler(name, canvasSize);
         this.data_;
         var peersJsonFile_ = "/peers.json";
         loadJSON(this.callbackPeersReceived, peersJsonFile_);
@@ -19,7 +19,7 @@ export default class ArkPlace {
     }
 
     updateImage() {
-        this.canvasObj_.updateImage();
+        this.canvasHandler_.updateImage();
     }
 
     getFormValues() {
@@ -39,7 +39,7 @@ export default class ArkPlace {
     // Editing
     // Set depth
     setDepth(depth) {
-        this.canvasObj_.setDepth(depth);
+        this.canvasHandler_.setDepth(depth);
     }
 
     // TODO: Set pixel values
@@ -88,8 +88,8 @@ export default class ArkPlace {
     // Draw on canvas
     drawOnCanvas(x, y, depth, color, visible = true) { // Make sure all required values are defined
         if (x && y && depth && color) {
-            this.canvasObj_.updateDenseTreeItem(x, y, depth, color, visible);
-            this.canvasObj_.updateImage();
+            this.canvasHandler_.updateDenseTreeItem(x, y, depth, color, visible);
+            this.canvasHandler_.updateImage();
         }
     }
 
