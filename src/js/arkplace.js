@@ -1,7 +1,7 @@
 // TODO: Implements model layer containing business logic
 
-import {loadJSON} from "/js/utils.js";
-import {CanvasHandler} from "/js/canvasHandler.js";
+import {loadJSON} from "/src/js/utils.js";
+import {CanvasHandler} from "/src/js/canvasHandler.js";
 
 export class ArkPlace {
     constructor(name, canvasSize) { // TODO: Initialize CanvasHandler object

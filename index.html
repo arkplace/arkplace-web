@@ -1,18 +1,18 @@
 <!DOCTYPE html> <html>
     <head>
         <script src="extern/js/color-picker.min.js"></script>
-        <script src="js/utils.js" type="module"></script>
-        <script src="js/commonTypes.js" type="module"></script>
-        <script src="js/quadtree.js" type="module"></script>
-        <script src="js/canvasHandler.js" type="module"></script>
-        <script src="js/viewer.js" type="module"></script>
+        <script src="src/js/utils.js" type="module"></script>
+        <script src="src/js/commonTypes.js" type="module"></script>
+        <script src="src/js/quadtree.js" type="module"></script>
+        <script src="src/js/canvasHandler.js" type="module"></script>
+        <script src="src/js/viewer.js" type="module"></script>
         <script type="module">
-            import {Point, QixelWithDepth, QixelWithSize} from "/js/commonTypes.js";
-            import {ArkPlace} from "/js/arkplace.js";
-            import {canvasBootstrap} from "/js/utils.js";
+            import {Point, QixelWithDepth, QixelWithSize} from "/src/js/commonTypes.js";
+            import {ArkPlace} from "/src/js/arkplace.js";
+            import {canvasBootstrap} from "/src/js/utils.js";
             window.ap = new ArkPlace("defaultCanvas", 1024);
         </script>
-        <link href="css/front.css" rel="stylesheet" type="text/css">
+        <link href="src/css/front.css" rel="stylesheet" type="text/css">
         <link href="extern/css/color-picker.min.css" rel="stylesheet">
     </head>
     <body>

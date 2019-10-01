@@ -2,10 +2,10 @@
 // TODO: Separate Drawing (view) functionality from UI (control)
 // TODO: Provide interface for Arkplace main class to call
 
-import {updateXYValuesUI, updateDepthValuesUI} from "/js/utils.js";
-import {QixelWithDepth} from "/js/commonTypes.js";
-import {DenseQuadTree} from "/js/quadtree.js";
-import {Viewer} from "/js/viewer.js";
+import {updateXYValuesUI, updateDepthValuesUI} from "/src/js/utils.js";
+import {QixelWithDepth} from "/src/js/commonTypes.js";
+import {DenseQuadTree} from "/src/js/quadtree.js";
+import {Viewer} from "/src/js/viewer.js";
 
 export class CanvasHandler {
     constructor(name, canvasSize, canvas_offset) { // Setup canvas and context
