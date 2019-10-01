@@ -10,7 +10,8 @@ export function canvasBootstrap(canvasHandler, canvasSize) {
         var x = genRandomIntInsecure(canvasSize);
         var y = genRandomIntInsecure(canvasSize);
         var depth = genRandomIntInsecure(10);
-        canvasHandler.updateDenseTreeItem(x, y, depth, 'rgb(' + genRandomIntInsecure(255) + ',' + genRandomIntInsecure(255) + ',' + genRandomIntInsecure(255) + ')', true);
+        var color = 'rgb(' + genRandomIntInsecure(255) + ',' + genRandomIntInsecure(255) + ',' + genRandomIntInsecure(255) + ')';
+        canvasHandler.updateDenseTreeItem(x, y, depth, color, true);
     }
     canvasHandler.updateImage();
 
