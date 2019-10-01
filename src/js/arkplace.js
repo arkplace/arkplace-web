@@ -2,20 +2,23 @@
 
 import {loadJSON} from "/src/js/utils.js";
 import {CanvasHandler} from "/src/js/canvasHandler.js";
+import {PeerHandler} from "/src/js/peerHandler.js";
 
 export class ArkPlace {
     constructor(name, canvasSize) { // TODO: Initialize CanvasHandler object
         this.canvasHandler_ = new CanvasHandler(name, canvasSize);
         this.data_;
         var peersJsonFile_ = "/peers.json";
-        loadJSON(this.callbackPeersReceived, peersJsonFile_);
+        var cb = (this.callbackPeersReceived).bind(this);
+        loadJSON(cb, peersJsonFile_);
 
+        this.peerHandler_ = new PeerHandler();
         // TODO: Hardcode network parameters and app constants
     }
 
     callbackPeersReceived(response) {
-        var actual_JSON = JSON.parse(response);
-        console.log(actual_JSON[1].ip);
+        var peersJSON = JSON.parse(response);
+        this.peerHandler_.addPeersToList(peersJSON);
     }
 
     updateImage() {
