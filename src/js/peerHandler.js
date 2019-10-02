@@ -52,12 +52,12 @@ export class PeerHandler {
     ifReachableMoveToPeerList(peer) {
         var peerURI = this.convertToURI(peer);
         var callback = (this.addSinglePeerToList).bind(this);
-        APIRequestHandler.MakeJSONRequest(peerURI, callback, peer);
+        APIRequestHandler.sendLivenessCheckRequest(peerURI, callback, peer);
     }
 
     loadPeersFromURI(requestURI) {
         var callback = (this.addAllPeersToList).bind(this);
-        APIRequestHandler.MakeJSONRequest(requestURI, callback, null);
+        APIRequestHandler.sendJSONRequest(requestURI, callback);
     }
 
     convertToURI(peer) {
