@@ -84,16 +84,18 @@ export class PeerHandler {
             peer = this.peers[rIdx];
 
             if (this.shouldRefresh()) {
-                this.keepOnlyIfReachable(peer);
-                peer.port = this.allowedPort;
-                console.log(peer);
-                var peerURI = this.getPeersAPIEndPoint(tempPeer);
-                console.log(peerURI);
-                this.loadPeersFromURI(peerURI);
+                this.checkLivenessAndRefreshPeer(peer);
             }
         }
         while(this.peerNotFound(peer));
         return peer;
+    }
+
+    checkLivenessAndRefreshPeer(peer) {
+        this.keepOnlyIfReachable(peer);
+        peer.port = this.allowedPort;
+        var peerURI = this.getPeersAPIEndPoint(tempPeer);
+        this.loadPeersFromURI(peerURI);
     }
 
     getPeersAPIEndPoint(peer) {
