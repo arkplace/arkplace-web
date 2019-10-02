@@ -1,6 +1,4 @@
 // TODO: Implements model layer containing business logic
-
-import {loadJSON} from "/src/js/utils.js";
 import {CanvasHandler} from "/src/js/canvasHandler.js";
 import {PeerHandler} from "/src/js/peerHandler.js";
 
@@ -8,17 +6,13 @@ export class ArkPlace {
     constructor(name, canvasSize) { // TODO: Initialize CanvasHandler object
         this.canvasHandler_ = new CanvasHandler(name, canvasSize);
         this.data_;
-        var peersJsonFile_ = "/peers.json";
-        var cb = (this.callbackPeersReceived).bind(this);
-        loadJSON(cb, peersJsonFile_);
 
         this.peerHandler_ = new PeerHandler();
-        // TODO: Hardcode network parameters and app constants
-    }
 
-    callbackPeersReceived(response) {
-        var peersJSON = JSON.parse(response);
-        this.peerHandler_.addPeersToList(peersJSON);
+        var seedPeersJsonURI_ = "/peers.json";
+        this.peerHandler_.loadPeersFromURI( seedPeersJsonURI_);
+
+        // TODO: Hardcode network parameters and app constants
     }
 
     updateImage() {

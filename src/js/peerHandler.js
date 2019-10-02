@@ -3,20 +3,20 @@ import {genRandomIntInsecure} from "/src/js/utils.js";
 export class PeerHandler {
     constructor() {
         this.peers = [];
-        this.unresolved = [];
+        this.allowedPort = "4003";
         this.protocol = "http";
         this.refreshAfter = 100;
         this.accessCounter = 0;
     }
 
-    addPeersToList(list) {
-        for (var idx in list) {
-            const peer = list[idx];
+    addAllPeersToList(list) {
+        var peerData = list.data;
+        for (var idx in peerData) {
+            var peer = peerData[idx];
+            peer.port = this.allowedPort;
             if (this.isValidPeer(peer)) {
-                this.unresolved.push(peer);
+                this.ifReachableMoveToPeerList(peer);
             }
-
-            this.ifReachableMoveToPeerList(peer);
         }
     }
 
@@ -49,13 +49,32 @@ export class PeerHandler {
     }
 
     ifReachableMoveToPeerList(peer) {
+        var peerURI = this.convertToURI(peer);
+        var callback = (this.addSinglePeerToList).bind(this);
+        this.apiGetJSONRequestHandler(peerURI, callback, peer);
+    }
+
+    loadPeersFromURI(requestURI) {
+        var callback = (this.addAllPeersToList).bind(this);
+        this.apiGetJSONRequestHandler(requestURI, callback, null);
+    }
+
+    apiGetJSONRequestHandler( requestURI, callback, returnObject) {
         var req = new XMLHttpRequest();
-        var peerURI =  this.convertToURI(peer);
-        req.open('GET', peerURI, true);
-        var callback = (this.movePeerToList).bind(this);
+        req.overrideMimeType("application/json");
+        req.open('GET', requestURI, true);
         req.onreadystatechange = function () {
             if (req.readyState == 4 && req.status == "200") {
-                callback(peer);
+                if (returnObject) {
+                    callback(returnObject);
+                }
+                else {
+                    var dataJSON = JSON.parse(req.responseText);
+                    callback(dataJSON);
+                }
+            }
+            else {
+                console.log("Access denied by the node " + requestURI + ". Not adding to peer list.");
             }
         };
         req.send();
@@ -65,10 +84,9 @@ export class PeerHandler {
         return this.protocol + "://" + peer.ip + ":" + peer.port;
     }
 
-    movePeerToList(peer) {
-        var idx = this.unresolved.indexOf(peer);
-        if (idx != -1) {
-            this.unresolved.splice(idx, 1);
+    addSinglePeerToList(peer) {
+        var exists = this.peers.includes(peer);
+        if (!exists) {
             this.peers.push(peer);
         }
     }
@@ -77,16 +95,30 @@ export class PeerHandler {
         var peer;
         ++this.accessCounter;
         do {
+            if (this.peers.length == 0) {
+                console.log("ERROR! peers list empty when not expected.");
+                return "";
+            }
+
             var rIdx = genRandomIntInsecure(this.peers.length);
             peer = this.peers[rIdx];
 
-            if (this.shouldRefresh())
-            {
+            if (this.shouldRefresh()) {
                 this.keepOnlyIfReachable(peer);
+                peer.port = this.allowedPort;
+                console.log(peer);
+                var peerURI = this.getPeersAPIEndPoint(tempPeer);
+                console.log(peerURI);
+                this.loadPeersFromURI(peerURI);
             }
         }
         while(this.peerNotFound(peer));
         return peer;
+    }
+
+    getPeersAPIEndPoint(peer) {
+        var baseURI = this.convertToURI(peer);
+        return baseURI + String("/api/peers");
     }
 
     shouldRefresh() {
@@ -101,7 +133,7 @@ export class PeerHandler {
         var idx = this.peers.indexOf(peer);
         if (idx != -1) {
             this.peers.splice(idx, 1);
-            ifReachableMoveToPeerList(peer);
+            this.ifReachableMoveToPeerList(peer);
         }
     }
 };
