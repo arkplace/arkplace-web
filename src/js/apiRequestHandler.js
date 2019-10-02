@@ -23,13 +23,13 @@ export class APIRequestHandler {
                 console.log("Access denied by the node " + requestURI + ". Not adding to peer list.");
             }
         };
-        APIRequestHandler.triggerRequest(requestURI, cb);
+        APIRequestHandler.triggerRequest(req, requestURI, cb);
     }
 
     static makeRequest() {
         return new XMLHttpRequest();
     }
-    
+
     static triggerRequest(req, requestURI, cb) {
         req.overrideMimeType("application/json");
         req.open('GET', requestURI, true);
