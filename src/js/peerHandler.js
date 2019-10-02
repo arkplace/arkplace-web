@@ -1,4 +1,5 @@
 import {genRandomIntInsecure} from "/src/js/utils.js";
+import {APIRequestHandler} from "/src/js/apiRequestHandler.js"
 
 export class PeerHandler {
     constructor() {
@@ -51,33 +52,12 @@ export class PeerHandler {
     ifReachableMoveToPeerList(peer) {
         var peerURI = this.convertToURI(peer);
         var callback = (this.addSinglePeerToList).bind(this);
-        this.apiGetJSONRequestHandler(peerURI, callback, peer);
+        APIRequestHandler.MakeJSONRequest(peerURI, callback, peer);
     }
 
     loadPeersFromURI(requestURI) {
         var callback = (this.addAllPeersToList).bind(this);
-        this.apiGetJSONRequestHandler(requestURI, callback, null);
-    }
-
-    apiGetJSONRequestHandler( requestURI, callback, returnObject) {
-        var req = new XMLHttpRequest();
-        req.overrideMimeType("application/json");
-        req.open('GET', requestURI, true);
-        req.onreadystatechange = function () {
-            if (req.readyState == 4 && req.status == "200") {
-                if (returnObject) {
-                    callback(returnObject);
-                }
-                else {
-                    var dataJSON = JSON.parse(req.responseText);
-                    callback(dataJSON);
-                }
-            }
-            else {
-                console.log("Access denied by the node " + requestURI + ". Not adding to peer list.");
-            }
-        };
-        req.send();
+        APIRequestHandler.MakeJSONRequest(requestURI, callback, null);
     }
 
     convertToURI(peer) {
