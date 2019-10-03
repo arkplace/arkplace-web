@@ -14,14 +14,25 @@ export class PeerHandler {
         var peerData = list.data;
         for (var idx in peerData) {
             var peer = peerData[idx];
-            if (this.isValidPeer(peer)) {
-                peer.port = this.getAPIPortFromPeer(peer);
-                delete peer.ports;
-                delete peer.latency;
-                delete peer.height;
-                this.keepOnlyIfReachable(peer);
+            if (this.hasAPI(peer)) {
+                peer = this.stripDownPeer(peer);
+                if (this.isValidPeer(peer) && this.peerNotFound(peer)) {
+                    this.keepOnlyIfReachable(peer);
+                }
             }
         }
+    }
+
+    hasAPI(peer) {
+        return this.isAPIPortDefined(peer) && this.hasAPIOpen(peer);
+    }
+
+    stripDownPeer(peer) {
+        peer.port = this.getAPIPortFromPeer(peer);
+        delete peer.ports;
+        delete peer.latency;
+        delete peer.height;
+        return peer;
     }
 
     isValidPeer(peer) {
@@ -29,12 +40,6 @@ export class PeerHandler {
             return false;
         }
         if (!this.isValidAddress(peer)) {
-            return false;
-        }
-        if (!this.isAPIPortDefined(peer)) {
-            return false;
-        }
-        if (!this.hasAPIOpen(peer)) {
             return false;
         }
 
