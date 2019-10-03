@@ -14,9 +14,9 @@ export class PeerHandler {
         var peerData = list.data;
         for (var idx in peerData) {
             var peer = peerData[idx];
-            if (this.hasAPI(peer)) {
+            if (this.hasAPI(peer) && this.isValidPeer(peer)) {
                 peer = this.stripDownPeer(peer);
-                if (this.isValidPeer(peer) && this.peerNotFound(peer)) {
+                if (this.peerNotFound(peer)) {
                     this.keepOnlyIfReachable(peer);
                 }
             }
