@@ -4,19 +4,22 @@ import {APIRequestHandler} from "/src/js/apiRequestHandler.js"
 export class PeerHandler {
     constructor() {
         this.peers = [];
-        this.allowedPort = "4003";
         this.protocol = "http";
         this.refreshAfter = 100;
         this.accessCounter = 0;
+        this.apiKey = "@arkecosystem/core-api";
     }
 
     addAllPeersToList(list) {
         var peerData = list.data;
         for (var idx in peerData) {
             var peer = peerData[idx];
-            peer.port = this.allowedPort;
             if (this.isValidPeer(peer)) {
-                this.ifReachableMoveToPeerList(peer);
+                peer.port = this.getAPIPortFromPeer(peer);
+                delete peer.ports;
+                delete peer.latency;
+                delete peer.height;
+                this.keepOnlyIfReachable(peer);
             }
         }
     }
@@ -26,6 +29,12 @@ export class PeerHandler {
             return false;
         }
         if (!this.isValidAddress(peer)) {
+            return false;
+        }
+        if (!this.isAPIPortDefined(peer)) {
+            return false;
+        }
+        if (!this.hasAPIOpen(peer)) {
             return false;
         }
 
@@ -45,11 +54,23 @@ export class PeerHandler {
         return localAliases.includes(peer.ip);
     }
 
-    isValidAddress() {
+    isValidAddress(peer) {
         return true;
     }
 
-    ifReachableMoveToPeerList(peer) {
+    isAPIPortDefined(peer) {
+        return peer.ports[this.apiKey] != undefined;
+    }
+
+    hasAPIOpen(peer) {
+        return peer.ports[this.apiKey] != -1;
+    }
+
+    getAPIPortFromPeer(peer) {
+        return peer.ports[this.apiKey];
+    }
+
+    ifReachableAddToPeerList(peer) {
         var peerURI = this.convertToURI(peer);
         var callback = (this.addSinglePeerToList).bind(this);
         APIRequestHandler.sendLivenessCheckRequest(peerURI, callback, peer);
@@ -73,7 +94,6 @@ export class PeerHandler {
 
     getRandomPeer() {
         var peer;
-        ++this.accessCounter;
         do {
             if (this.peers.length == 0) {
                 console.log("ERROR! peers list empty when not expected.");
@@ -88,13 +108,13 @@ export class PeerHandler {
             }
         }
         while(this.peerNotFound(peer));
+        ++this.accessCounter;
         return peer;
     }
 
     checkLivenessAndRefreshPeer(peer) {
         this.keepOnlyIfReachable(peer);
-        peer.port = this.allowedPort;
-        var peerURI = this.getPeersAPIEndPoint(tempPeer);
+        var peerURI = this.getPeersAPIEndPoint(peer);
         this.loadPeersFromURI(peerURI);
     }
 
@@ -112,10 +132,14 @@ export class PeerHandler {
     }
 
     keepOnlyIfReachable(peer) {
+        this.removeFromPeerListIfExists(peer);
+        this.ifReachableAddToPeerList(peer);
+    }
+
+    removeFromPeerListIfExists(peer) {
         var idx = this.peers.indexOf(peer);
         if (idx != -1) {
-            this.peers.splice(idx, 1);
-            this.ifReachableMoveToPeerList(peer);
+            this.peers = this.peers.splice(idx, 1);
         }
     }
 };
