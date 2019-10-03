@@ -10,7 +10,7 @@ export class ArkPlace {
         this.peerHandler_ = new PeerHandler();
 
         var seedPeersJsonURI_ = "/peers.json";
-        this.peerHandler_.loadPeersFromURI( seedPeersJsonURI_);
+        this.peerHandler_.loadPeersFromURI( seedPeersJsonURI_ );
 
         // TODO: Hardcode network parameters and app constants
     }
