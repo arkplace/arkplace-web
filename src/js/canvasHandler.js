@@ -70,20 +70,22 @@ export class CanvasHandler {
 
     updateImage() {
         this.resetImage();
-        var max_items = this.quad_.getQuadTreeSize()
+        this.processQuadTreeAndDraw();
+    }
+
+    processQuadTreeAndDraw() {
+        var max_items = this.quad_.getQuadTreeSize();
         for (var i = 0; i < max_items; i++) {
             var tempItem = this.quad_.getDenseQuadTreeItemByIndex(i);
-            if (tempItem.visible) {
-
+            if (this.isQixelVisible(tempItem)) {
                 this.commitToImage(i, tempItem);
-                var x = this.quad_.getXValueFromIndex(i);
-                var y = this.quad_.getYValueFromIndex(i);
-                var depth = this.quad_.getDepthFromIndex(i);
             }
         }
-        var qixel = new QixelWithDepth(0, 0, 0, "");
-        // Render
-        this.viewer_.drawLoop(qixel);
+        this.viewer_.drawLoop(new QixelWithDepth());
+    }
+
+    isQixelVisible(tempItem) {
+        return tempItem.visible;
     }
 
     commitToImage(index, item) {

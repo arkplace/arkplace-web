@@ -6,7 +6,7 @@ export class Point {
 };
 
 export class QixelWithDepth {
-    constructor(x, y, depth, color) {
+    constructor(x = 0, y= 0, depth= 0, color = "") {
         this.point = new Point(x, y);
         this.depth = depth;
         this.color = color;
