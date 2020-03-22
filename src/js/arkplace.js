@@ -14,7 +14,7 @@ export class ArkPlace {
         getSeedPeers();
 
         // Variables to use as storage
-        this.peerToConnect_ = this.peerHandler_.getRandomPeer();        
+        this.peerToConnect_ = this.peerHandler_.getRandomPeer();
     }
 
     updateImage() {
