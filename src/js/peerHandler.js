@@ -10,6 +10,16 @@ export class PeerHandler {
         this.accessCounter_ = 0;
         this.apiKeyNameBase_ = "@arkecosystem/core-api";
         this.apiListPeers_ = "/api/peers";
+        
+        this.localAliases = [
+            "localhost",
+            "127.0.0.1",
+            "0000:0000:0000:0000:0000:0000:0000:0001",
+            "::1",
+            "127.0.0.1/8",
+            "0000:0000:0000:0000:0000:0000:0000:0001/128",
+            "::1/128"
+        ];
     }
 
     addAllPeersToList(list) {
@@ -49,16 +59,7 @@ export class PeerHandler {
     }
 
     isLocalHost(peer) {
-        const localAliases = [
-            "localhost",
-            "127.0.0.1",
-            "0000:0000:0000:0000:0000:0000:0000:0001",
-            "::1",
-            "127.0.0.1/8",
-            "0000:0000:0000:0000:0000:0000:0000:0001/128",
-            "::1/128"
-        ];
-        return localAliases.includes(peer.ip);
+        return this.localAliases.includes(peer.ip);
     }
 
     isValidAddress(peer) {
