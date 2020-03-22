@@ -80,7 +80,7 @@ export class PeerHandler {
     ifReachableAddToPeerList(peer) {
         var peerURI = this.convertToURI(peer);
         var callback = (this.addSinglePeerToList).bind(this);
-        APIRequestHandler.sendLivenessCheckRequest(peerURI, callback, peer);
+        APIRequestHandler.sendJSONRequest(peerURI, callback, peer);
     }
 
     loadPeersFromURI(requestURI) {
@@ -93,6 +93,10 @@ export class PeerHandler {
     }
 
     addSinglePeerToList(peer) {
+        if (peer == null) {
+            console.error("Peer is null. Not adding to peer list.");
+        }
+        
         var exists = this.peers_.includes(peer);
         if (!exists) {
             this.peers_.push(peer);

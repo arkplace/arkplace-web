@@ -11,7 +11,7 @@ export class ArkPlace {
         this.bgColorDefault_ = "#777777";
         this.seedPeersJsonURI_ = "/peers.json";
 
-        getSeedPeers();
+        this.loadSeedPeers();
 
         // Variables to use as storage
         this.peerToConnect_ = this.peerHandler_.getRandomPeer();
@@ -72,7 +72,8 @@ export class ArkPlace {
         this.peerToConnect_ = this.peerHandler_.getRandomPeer();
     }
 
-    // TODO: Get transactions for address
+    // Get transactions for address
+
     // TODO: Parse vendorfield (elminate XSS vectors)
     // TODO: Decode command
     // TODO: Validate command

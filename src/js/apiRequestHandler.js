@@ -1,10 +1,15 @@
 export class APIRequestHandler {
-    static sendJSONRequest( requestURI, callback) {
+    static sendJSONRequest( requestURI, callback, returnObject = null) {
         var req = APIRequestHandler.makeRequest();
         var cb = function () {
             if (req.readyState == 4 && req.status == "200") {
-                var dataJSON = JSON.parse(req.responseText);
-                callback(dataJSON);
+                if ( returnObject ) {
+                    callback( returnObject );
+                }
+                else {
+                    var dataJSON = JSON.parse(req.responseText);
+                    callback(dataJSON);
+                }
             }
             else {
                 console.log("Access denied by the node " + requestURI + ".");
