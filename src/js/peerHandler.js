@@ -8,7 +8,8 @@ export class PeerHandler {
         this.refreshAfter_ = 100;
         this.retryLimit_ = 100;
         this.accessCounter_ = 0;
-        this.apiKey_ = "@arkecosystem/core-api";
+        this.apiKeyNameBase_ = "@arkecosystem/core-api";
+        this.apiListPeers_ = "/api/peers";
     }
 
     addAllPeersToList(list) {
@@ -65,15 +66,15 @@ export class PeerHandler {
     }
 
     isAPIPortDefined(peer) {
-        return peer.ports[this.apiKey_] != undefined;
+        return peer.ports[this.apiKeyNameBase_] != undefined;
     }
 
     hasAPIOpen(peer) {
-        return peer.ports[this.apiKey_] != -1;
+        return peer.ports[this.apiKeyNameBase_] != -1;
     }
 
     getAPIPortFromPeer(peer) {
-        return peer.ports[this.apiKey_];
+        return peer.ports[this.apiKeyNameBase_];
     }
 
     ifReachableAddToPeerList(peer) {
@@ -130,7 +131,7 @@ export class PeerHandler {
 
     getPeersAPIEndPoint(peer) {
         var baseURI = this.convertToURI(peer);
-        return baseURI + String("/api/peers");
+        return baseURI + String(this.apiListPeers_);
     }
 
     shouldRefresh() {
