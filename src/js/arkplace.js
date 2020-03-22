@@ -5,14 +5,16 @@ import {PeerHandler} from "/src/js/peerHandler.js";
 export class ArkPlace {
     constructor(name, canvasSize) { // TODO: Initialize CanvasHandler object
         this.canvasHandler_ = new CanvasHandler(name, canvasSize);
-        this.data_;
-
         this.peerHandler_ = new PeerHandler();
 
-        var seedPeersJsonURI_ = "/peers.json";
-        this.peerHandler_.loadPeersFromURI( seedPeersJsonURI_ );
-
         // TODO: Hardcode network parameters and app constants
+        this.bgColorDefault_ = "#777777";
+        this.seedPeersJsonURI_ = "/peers.json";
+
+        getSeedPeers();
+
+        // Variables to use as storage
+        this.peerToConnect_ = this.peerHandler_.getRandomPeer();        
     }
 
     updateImage() {
@@ -28,7 +30,7 @@ export class ArkPlace {
     }
 
     pixelErase(x, y, depth) {
-        this.drawOnCanvas(x, y, depth, "#777777", false);
+        this.drawOnCanvas(x, y, depth, this.bgColorDefault_, false);
         this.updateImage();
     }
 
@@ -60,10 +62,16 @@ export class ArkPlace {
 
     // ----------------------------------------------------------------------
     // Protocol
-    // TODO: Get seed peers
-    // TODO: Get peers from seed nodes
-    // TODO: Check API open
+    // Load seed peers
+    loadSeedPeers() {
+        this.peerHandler_.loadPeersFromURI( this.seedPeersJsonURI_ );
+    }
+
     // TODO: Get random peer (minimize chance of hitting api rate limit)
+    loadNextPeer() {
+        this.peerToConnect_ = this.peerHandler_.getRandomPeer();
+    }
+
     // TODO: Get transactions for address
     // TODO: Parse vendorfield (elminate XSS vectors)
     // TODO: Decode command

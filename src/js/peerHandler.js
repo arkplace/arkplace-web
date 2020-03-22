@@ -3,11 +3,12 @@ import {APIRequestHandler} from "/src/js/apiRequestHandler.js"
 
 export class PeerHandler {
     constructor() {
-        this.peers = [];
-        this.protocol = "http";
-        this.refreshAfter = 100;
-        this.accessCounter = 0;
-        this.apiKey = "@arkecosystem/core-api";
+        this.peers_ = [];
+        this.protocol_ = "http";
+        this.refreshAfter_ = 100;
+        this.retryLimit_ = 100;
+        this.accessCounter_ = 0;
+        this.apiKey_ = "@arkecosystem/core-api";
     }
 
     addAllPeersToList(list) {
@@ -64,15 +65,15 @@ export class PeerHandler {
     }
 
     isAPIPortDefined(peer) {
-        return peer.ports[this.apiKey] != undefined;
+        return peer.ports[this.apiKey_] != undefined;
     }
 
     hasAPIOpen(peer) {
-        return peer.ports[this.apiKey] != -1;
+        return peer.ports[this.apiKey_] != -1;
     }
 
     getAPIPortFromPeer(peer) {
-        return peer.ports[this.apiKey];
+        return peer.ports[this.apiKey_];
     }
 
     ifReachableAddToPeerList(peer) {
@@ -87,33 +88,37 @@ export class PeerHandler {
     }
 
     convertToURI(peer) {
-        return this.protocol + "://" + peer.ip + ":" + peer.port;
+        return this.protocol_ + "://" + peer.ip + ":" + peer.port;
     }
 
     addSinglePeerToList(peer) {
-        var exists = this.peers.includes(peer);
+        var exists = this.peers_.includes(peer);
         if (!exists) {
-            this.peers.push(peer);
+            this.peers_.push(peer);
         }
     }
 
     getRandomPeer() {
         var peer;
         do {
-            if (this.peers.length == 0) {
-                console.log("ERROR! peers list empty when not expected.");
+            if (this.accessCounter_ > this.retryLimit_) {
+                console.error("Error! retry limit reached without successful peer connection. Please check if seed peers are up to date and network is connected.");
+            }
+
+            if (this.peers_.length == 0) {
+                console.error("Error! peers list empty when not expected.");
                 return "";
             }
 
-            var rIdx = genRandomIntInsecure(this.peers.length);
-            peer = this.peers[rIdx];
+            var rIdx = genRandomIntInsecure(this.peers_.length);
+            peer = this.peers_[rIdx];
 
             if (this.shouldRefresh()) {
                 this.checkLivenessAndRefreshPeer(peer);
             }
         }
         while(this.peerNotFound(peer));
-        ++this.accessCounter;
+        ++this.accessCounter_;
         return peer;
     }
 
@@ -129,11 +134,11 @@ export class PeerHandler {
     }
 
     shouldRefresh() {
-        return this.accessCounter % this.refreshAfter == 0;
+        return this.accessCounter_ % this.refreshAfter_ == 0;
     }
 
     peerNotFound(peer) {
-        return this.peers.indexOf(peer) == -1;
+        return this.peers_.indexOf(peer) == -1;
     }
 
     keepOnlyIfReachable(peer) {
@@ -142,9 +147,9 @@ export class PeerHandler {
     }
 
     removeFromPeerListIfExists(peer) {
-        var idx = this.peers.indexOf(peer);
+        var idx = this.peers_.indexOf(peer);
         if (idx != -1) {
-            this.peers = this.peers.splice(idx, 1);
+            this.peers_ = this.peers_.splice(idx, 1);
         }
     }
 };
