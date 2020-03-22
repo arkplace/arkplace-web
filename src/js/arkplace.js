@@ -67,7 +67,7 @@ export class ArkPlace {
         this.peerHandler_.loadPeersFromURI( this.seedPeersJsonURI_ );
     }
 
-    // TODO: Get random peer (minimize chance of hitting api rate limit)
+    // Load next peer to be connected in the next request
     loadNextPeer() {
         this.peerToConnect_ = this.peerHandler_.getRandomPeer();
     }
