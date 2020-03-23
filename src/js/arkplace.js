@@ -1,6 +1,7 @@
 // TODO: Implements model layer containing business logic
-import {CanvasHandler} from "/src/js/canvasHandler.js";
-import {PeerHandler} from "/src/js/peerHandler.js";
+import { CanvasHandler } from "/src/js/canvasHandler.js";
+import { PeerHandler } from "/src/js/peerHandler.js";
+import { APIRequestHandler } from "./apiRequestHandler.js";
 
 export class ArkPlace {
     constructor(name, canvasSize) { // TODO: Initialize CanvasHandler object
@@ -8,13 +9,23 @@ export class ArkPlace {
         this.peerHandler_ = new PeerHandler();
 
         // TODO: Hardcode network parameters and app constants
+        this.protocol_ = "http";
         this.bgColorDefault_ = "#777777";
         this.seedPeersJsonURI_ = "/peers.json";
 
+        var readyStateCallback = (this.initializeReadyState).bind(this);
+        this.peerHandler_.registerReadyStateCallback(readyStateCallback);
         this.loadSeedPeers();
 
         // Variables to use as storage
-        this.peerToConnect_ = this.peerHandler_.getRandomPeer();
+        this.readyState = false;
+        this.peerToConnect_;
+        this.numTxCheckpoint = 0;
+    }
+
+    initializeReadyState() {
+        this.readyState = true;
+        this.loadNextPeer();
     }
 
     updateImage() {
@@ -26,7 +37,7 @@ export class ArkPlace {
         var x = document.getElementsByName("formX")[0].value;
         var y = document.getElementsByName("formY")[0].value;
         var color = document.getElementsByName("formColor")[0].value;
-        return {x, y, depth, color};
+        return { x, y, depth, color };
     }
 
     pixelErase(x, y, depth) {
@@ -49,13 +60,13 @@ export class ArkPlace {
 
     // Submit pixel
     pixelSubmit() {
-        let {x, y, depth, color} = this.getFormValues();
+        let { x, y, depth, color } = this.getFormValues();
         // TODO: prepare transaction
         // TODO: submit transaction
 
         // TODO: this is not necessary when using transaction
         this.updatePixel(x, y, depth, color);
-        console.log({x, y, depth, color});
+        console.log({ x, y, depth, color });
     }
 
     // TODO: Make transaction
@@ -64,7 +75,7 @@ export class ArkPlace {
     // Protocol
     // Load seed peers
     loadSeedPeers() {
-        this.peerHandler_.loadPeersFromURI( this.seedPeersJsonURI_ );
+        this.peerHandler_.loadPeersFromURI(this.seedPeersJsonURI_);
     }
 
     // Load next peer to be connected in the next request
@@ -72,7 +83,11 @@ export class ArkPlace {
         this.peerToConnect_ = this.peerHandler_.getRandomPeer();
     }
 
-    // Get transactions for address
+    // Get outgoing transactions for address
+    getOutgoingTransactions(walletId) {
+        txURI = this.peerHandler_.convertToURI(peerToConnect_);
+        APIRequestHandler.sendJSONRequest(txURI, txJSONReceived);
+    }
 
     // TODO: Parse vendorfield (elminate XSS vectors)
     // TODO: Decode command

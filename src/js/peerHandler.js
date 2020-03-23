@@ -1,5 +1,5 @@
-import {genRandomIntInsecure} from "/src/js/utils.js";
-import {APIRequestHandler} from "/src/js/apiRequestHandler.js"
+import { genRandomIntInsecure } from "/src/js/utils.js";
+import { APIRequestHandler } from "/src/js/apiRequestHandler.js"
 
 export class PeerHandler {
     constructor() {
@@ -10,7 +10,7 @@ export class PeerHandler {
         this.accessCounter_ = 0;
         this.apiKeyNameBase_ = "@arkecosystem/core-api";
         this.apiListPeers_ = "/api/peers";
-        
+
         this.localAliases = [
             "localhost",
             "127.0.0.1",
@@ -20,6 +20,8 @@ export class PeerHandler {
             "0000:0000:0000:0000:0000:0000:0000:0001/128",
             "::1/128"
         ];
+        this.callbackWhenReady = [];
+        this.firstIteration = true;
     }
 
     addAllPeersToList(list) {
@@ -84,6 +86,10 @@ export class PeerHandler {
         APIRequestHandler.sendJSONRequest(peerURI, callback, peer);
     }
 
+    registerReadyStateCallback(callback) {
+        this.callbackWhenReady = callback;
+    }
+
     loadPeersFromURI(requestURI) {
         var callback = (this.addAllPeersToList).bind(this);
         APIRequestHandler.sendJSONRequest(requestURI, callback);
@@ -101,6 +107,11 @@ export class PeerHandler {
         var exists = this.peers_.includes(peer);
         if (!exists) {
             this.peers_.push(peer);
+
+            if (this.firstIteration) {
+                this.callbackWhenReady();
+                this.firstIteration = false;
+            }
         }
     }
 
@@ -123,7 +134,7 @@ export class PeerHandler {
                 this.checkLivenessAndRefreshPeer(peer);
             }
         }
-        while(this.peerNotFound(peer));
+        while (this.peerNotFound(peer));
         ++this.accessCounter_;
         return peer;
     }
