@@ -1,18 +1,21 @@
 export class APIRequestHandler {
-    static sendJSONRequest( requestURI, callback, returnObject = null) {
+    static sendJSONRequest(requestURI, callback, returnObject = null) {
         var req = APIRequestHandler.makeRequest();
         var cb = function () {
-            if (req.readyState == 4 && req.status == "200") {
-                if ( returnObject ) {
-                    callback( returnObject );
+            // Only process finished requests
+            if (req.readyState == 4) {
+                if (req.status == "200") {
+                    if (returnObject) {
+                        callback(returnObject);
+                    }
+                    else {
+                        var dataJSON = JSON.parse(req.responseText);
+                        callback(dataJSON);
+                    }
                 }
                 else {
-                    var dataJSON = JSON.parse(req.responseText);
-                    callback(dataJSON);
+                    console.log("Access denied by the node " + requestURI + ".");
                 }
-            }
-            else {
-                console.log("Access denied by the node " + requestURI + ".");
             }
         };
         APIRequestHandler.triggerRequest(req, requestURI, cb);
