@@ -18,19 +18,6 @@ export class APIRequestHandler {
         APIRequestHandler.triggerRequest(req, requestURI, cb);
     }
 
-    static sendLivenessCheckRequest(requestURI, callback, returnObject) {
-        var req = APIRequestHandler.makeRequest();
-        var cb = function () {
-            if (req.readyState == 4 && req.status == "200") {
-                callback(returnObject);
-            }
-            else {
-                console.log("Access denied by the node " + requestURI + ". Not adding to peer list.");
-            }
-        };
-        APIRequestHandler.triggerRequest(req, requestURI, cb);
-    }
-
     static makeRequest() {
         return new XMLHttpRequest();
     }
