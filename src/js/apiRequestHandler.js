@@ -14,7 +14,7 @@ export class APIRequestHandler {
                     }
                 }
                 else {
-                    console.log("Access denied by the node " + requestURI + ".");
+                    console.log("Error processing request response. Host: " + requestURI + ".");
                 }
             }
         };
