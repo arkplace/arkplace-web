@@ -54,13 +54,11 @@ export class ArkPlace {
         this.canvasHandler_.setDepth(depth);
     }
 
-    // TODO: Set pixel values
     updatePixel(x, y, depth, color) {
         this.drawOnCanvas(x, y, depth, color);
         this.updateImage();
     }
 
-    // Submit pixel
     pixelSubmit() {
         let { x, y, depth, color } = this.getFormValues();
         // TODO: prepare transaction
@@ -75,17 +73,14 @@ export class ArkPlace {
 
     // ----------------------------------------------------------------------
     // Protocol
-    // Load seed peers
     loadSeedPeers() {
         this.peerHandler_.loadPeersFromURI(this.seedPeersJsonURI_);
     }
 
-    // Load next peer to be connected in the next request
     loadNextPeer() {
         this.peerToConnect_ = this.peerHandler_.getRandomPeer();
     }
 
-    // Get outgoing transactions for address
     getOutgoingTransactions(walletId) {
         var peerURI = this.peerHandler_.convertToURI(this.peerToConnect_) + EndpointHandler.getSearchTransactionsAPIEndpoint();
         APIRequestHandler.sendJSONRequest(peerURI,
@@ -93,7 +88,6 @@ export class ArkPlace {
             EndpointHandler.createSearchRequestPOSTData( walletId ));
     }
 
-    // Get outgoing transactions for address
     getIncomingTransactions(walletId) {
         var peerURI = this.peerHandler_.convertToURI(this.peerToConnect_) + EndpointHandler.getSearchTransactionsAPIEndpoint();
         APIRequestHandler.sendJSONRequest(peerURI,
