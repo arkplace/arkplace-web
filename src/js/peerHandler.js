@@ -1,5 +1,6 @@
 import { genRandomIntInsecure } from "/src/js/utils.js";
 import { APIRequestHandler } from "/src/js/apiRequestHandler.js"
+import { EndpointHandler } from "/src/js/endpointHandler.js"
 
 export class PeerHandler {
     constructor() {
@@ -9,7 +10,7 @@ export class PeerHandler {
         this.retryLimit_ = 100;
         this.accessCounter_ = 0;
         this.apiKeyNameBase_ = "@arkecosystem/core-api";
-        this.apiListPeers_ = "/api/peers";
+        this.apiListPeers_ = EndpointHandler.getPeersAPIEndpoint();
 
         this.localAliases = [
             "localhost",

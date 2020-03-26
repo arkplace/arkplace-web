@@ -85,8 +85,8 @@ export class ArkPlace {
 
     // Get outgoing transactions for address
     getOutgoingTransactions(walletId) {
-        txURI = this.peerHandler_.convertToURI(peerToConnect_);
-        APIRequestHandler.sendJSONRequest(txURI, txJSONReceived);
+        var peerURI = this.peerHandler_.convertToURI(this.peerToConnect_);
+        APIRequestHandler.sendJSONRequest(peerURI, txJSONReceived);
     }
 
     // TODO: Parse vendorfield (elminate XSS vectors)
