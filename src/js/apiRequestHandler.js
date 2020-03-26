@@ -34,6 +34,6 @@ export class APIRequestHandler {
         req.open(mode, requestURI, true);
         req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
         req.onreadystatechange = cb;
-        req.send('{}');
+        req.send(postData);
     }
 };
