@@ -2,6 +2,7 @@
 import { CanvasHandler } from "/src/js/canvasHandler.js";
 import { PeerHandler } from "/src/js/peerHandler.js";
 import { APIRequestHandler } from "./apiRequestHandler.js";
+import { EndpointHandler } from "/src/js/endpointHandler.js"
 
 export class ArkPlace {
     constructor(name, canvasSize) { // TODO: Initialize CanvasHandler object
@@ -85,8 +86,12 @@ export class ArkPlace {
 
     // Get outgoing transactions for address
     getOutgoingTransactions(walletId) {
-        var peerURI = this.peerHandler_.convertToURI(this.peerToConnect_);
-        APIRequestHandler.sendJSONRequest(peerURI, txJSONReceived);
+        var peerURI = this.peerHandler_.convertToURI(this.peerToConnect_) + EndpointHandler.getSearchTransactionsAPIEndpoint();
+        APIRequestHandler.sendJSONRequest(peerURI, this.transactionSearchJSONReceived);
+    }
+
+    transactionSearchJSONReceived( data ) {
+        console.log(data);
     }
 
     // TODO: Parse vendorfield (elminate XSS vectors)
