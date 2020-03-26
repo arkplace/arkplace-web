@@ -10,7 +10,6 @@ export class PeerHandler {
         this.retryLimit_ = 100;
         this.accessCounter_ = 0;
         this.apiKeyNameBase_ = "@arkecosystem/core-api";
-        this.apiListPeers_ = EndpointHandler.getPeersAPIEndpoint();
 
         this.localAliases = [
             "localhost",
@@ -142,13 +141,8 @@ export class PeerHandler {
 
     checkLivenessAndRefreshPeer(peer) {
         this.keepOnlyIfReachable(peer);
-        var peerURI = this.getPeersAPIEndPoint(peer);
+        var peerURI = this.convertToURI(peer) + EndpointHandler.getPeersAPIEndpoint();
         this.loadPeersFromURI(peerURI);
-    }
-
-    getPeersAPIEndPoint(peer) {
-        var baseURI = this.convertToURI(peer);
-        return baseURI + String(this.apiListPeers_);
     }
 
     shouldRefresh() {
