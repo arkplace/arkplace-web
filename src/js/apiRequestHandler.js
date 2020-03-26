@@ -3,8 +3,8 @@ export class APIRequestHandler {
         var req = APIRequestHandler.makeRequest();
         var cb = function () {
             // Only process finished requests
-            if (req.readyState == 4) {
-                if (req.status == "200") {
+            if (req.readyState == XMLHttpRequest.DONE) {
+                if (req.status == "200" || req.status == "201") {
                     if (returnObject) {
                         callback(returnObject);
                     }
@@ -26,9 +26,14 @@ export class APIRequestHandler {
     }
 
     static triggerRequest(req, requestURI, cb, postData) {
+        var mode = "GET";
+        if (postData) {
+            mode = "POST";
+        }
         req.overrideMimeType("application/json");
-        req.open('GET', requestURI, true);
+        req.open(mode, requestURI, true);
+        req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
         req.onreadystatechange = cb;
-        req.send(postData);
+        req.send('{}');
     }
 };
