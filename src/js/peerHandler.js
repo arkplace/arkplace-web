@@ -83,7 +83,7 @@ export class PeerHandler {
     ifReachableAddToPeerList(peer) {
         var peerURI = this.convertToURI(peer);
         var callback = (this.addNewPeerToList).bind(this);
-        APIRequestHandler.sendJSONRequest(peerURI, callback, peer);
+        APIRequestHandler.sendJSONRequest(peerURI, callback, null, peer);
     }
 
     registerReadyStateCallback(callback) {

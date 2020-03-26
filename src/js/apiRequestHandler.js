@@ -1,5 +1,5 @@
 export class APIRequestHandler {
-    static sendJSONRequest(requestURI, callback, returnObject = null) {
+    static sendJSONRequest(requestURI, callback, postData = null, returnObject = null) {
         var req = APIRequestHandler.makeRequest();
         var cb = function () {
             // Only process finished requests
@@ -18,17 +18,17 @@ export class APIRequestHandler {
                 }
             }
         };
-        APIRequestHandler.triggerRequest(req, requestURI, cb);
+        APIRequestHandler.triggerRequest(req, requestURI, cb, postData);
     }
 
     static makeRequest() {
         return new XMLHttpRequest();
     }
 
-    static triggerRequest(req, requestURI, cb) {
+    static triggerRequest(req, requestURI, cb, postData) {
         req.overrideMimeType("application/json");
         req.open('GET', requestURI, true);
         req.onreadystatechange = cb;
-        req.send();
+        req.send(postData);
     }
 };
