@@ -90,7 +90,15 @@ export class ArkPlace {
         var peerURI = this.peerHandler_.convertToURI(this.peerToConnect_) + EndpointHandler.getSearchTransactionsAPIEndpoint();
         APIRequestHandler.sendJSONRequest(peerURI,
             this.transactionSearchJSONReceived,
-            EndpointHandler.createSearchRequestPOSTData(this.coordinatorAddress_));
+            EndpointHandler.createSearchRequestPOSTData( walletId ));
+    }
+
+    // Get outgoing transactions for address
+    getIncomingTransactions(walletId) {
+        var peerURI = this.peerHandler_.convertToURI(this.peerToConnect_) + EndpointHandler.getSearchTransactionsAPIEndpoint();
+        APIRequestHandler.sendJSONRequest(peerURI,
+            this.transactionSearchJSONReceived,
+            EndpointHandler.createSearchRequestPOSTData( null, walletId ));
     }
 
     transactionSearchJSONReceived(data) {

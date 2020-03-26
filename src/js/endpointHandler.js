@@ -7,9 +7,14 @@ export class EndpointHandler {
         return this.apiPrefix + "transactions/search";
     }
 
-    static createSearchRequestPOSTData( recipientId, timestampFrom = null ) {
+    static createSearchRequestPOSTData( senderId = null, recipientId = null, timestampFrom = null ) {
         var jsonPostObject = {};
-        jsonPostObject.recipientId = recipientId;
+        if (senderId) {
+            jsonPostObject.senderId = senderId;
+        }
+        if (recipientId) {
+            jsonPostObject.recipientId = recipientId;
+        }
         if (timestampFrom) {
             jsonPostObject.timestampFrom = timestampFrom;
         }
