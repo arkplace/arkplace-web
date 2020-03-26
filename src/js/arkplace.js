@@ -13,6 +13,7 @@ export class ArkPlace {
         this.protocol_ = "http";
         this.bgColorDefault_ = "#777777";
         this.seedPeersJsonURI_ = "/peers.json";
+        this.coordinatorAddress_ = "AeDzxthX3xWMqinkhJivC8jWb9WcrdSkQj";
 
         var readyStateCallback = (this.initializeReadyState).bind(this);
         this.peerHandler_.registerReadyStateCallback(readyStateCallback);
@@ -87,10 +88,12 @@ export class ArkPlace {
     // Get outgoing transactions for address
     getOutgoingTransactions(walletId) {
         var peerURI = this.peerHandler_.convertToURI(this.peerToConnect_) + EndpointHandler.getSearchTransactionsAPIEndpoint();
-        APIRequestHandler.sendJSONRequest(peerURI, this.transactionSearchJSONReceived);
+        APIRequestHandler.sendJSONRequest(peerURI,
+            this.transactionSearchJSONReceived,
+            EndpointHandler.createSearchRequestPOSTData(this.coordinatorAddress_));
     }
 
-    transactionSearchJSONReceived( data ) {
+    transactionSearchJSONReceived(data) {
         console.log(data);
     }
 
