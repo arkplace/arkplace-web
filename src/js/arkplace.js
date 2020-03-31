@@ -81,22 +81,38 @@ export class ArkPlace {
         this.peerToConnect_ = this.peerHandler_.getRandomPeer();
     }
 
-    getOutgoingTransactions(walletId) {
-        var peerURI = this.peerHandler_.convertToURI(this.peerToConnect_) + EndpointHandler.getSearchTransactionsAPIEndpoint();
-        APIRequestHandler.sendJSONRequest(peerURI,
-            this.transactionSearchJSONReceived,
-            EndpointHandler.createSearchRequestPOSTData( walletId ));
+    getOutgoingTransactions(walletId, cb = null) {
+        this.transactionReceivedCallback_ = cb;
+        this.getTransactions(walletId, "outgoing");
     }
 
-    getIncomingTransactions(walletId) {
+    getIncomingTransactions(walletId, cb = null) {
+        this.transactionReceivedCallback_ = cb;
+        this.getTransactions(walletId, "incoming");
+    }
+
+    getTransactions(walletId, mode) {
         var peerURI = this.peerHandler_.convertToURI(this.peerToConnect_) + EndpointHandler.getSearchTransactionsAPIEndpoint();
+
+        var arg1 = null;
+        var arg2 = null;
+        if (mode == "incoming") {
+            arg2 = walletId;
+        }
+        else if (mode == "outgoing") {
+            arg1 = walletId;
+        }
+        
         APIRequestHandler.sendJSONRequest(peerURI,
             this.transactionSearchJSONReceived,
-            EndpointHandler.createSearchRequestPOSTData( null, walletId ));
+            EndpointHandler.createSearchRequestPOSTData( arg1, arg2 ));
     }
 
     transactionSearchJSONReceived(data) {
         console.log(data);
+        if (this.transactionReceivedCallback_) {
+            this.transactionReceivedCallback_(data);
+        }
     }
 
     // TODO: Parse vendorfield (elminate XSS vectors)
