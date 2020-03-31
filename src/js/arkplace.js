@@ -82,16 +82,15 @@ export class ArkPlace {
     }
 
     getOutgoingTransactions(walletId, cb = null) {
-        this.transactionReceivedCallback_ = cb;
         this.getTransactions(walletId, "outgoing");
     }
 
     getIncomingTransactions(walletId, cb = null) {
-        this.transactionReceivedCallback_ = cb;
         this.getTransactions(walletId, "incoming");
     }
 
     getTransactions(walletId, mode) {
+        this.transactionReceivedCallback_ = cb;
         var peerURI = this.peerHandler_.convertToURI(this.peerToConnect_) + EndpointHandler.getSearchTransactionsAPIEndpoint();
 
         var arg1 = null;
