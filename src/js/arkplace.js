@@ -5,7 +5,7 @@ import { APIRequestHandler } from "./apiRequestHandler.js";
 import { EndpointHandler } from "/src/js/endpointHandler.js"
 
 export class ArkPlace {
-    constructor(name, canvasSize) { // TODO: Initialize CanvasHandler object
+    constructor(name, canvasSize) {
         this.canvasHandler_ = new CanvasHandler(name, canvasSize);
         this.peerHandler_ = new PeerHandler();
 
