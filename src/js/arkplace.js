@@ -1,17 +1,15 @@
 // TODO: Implements model layer containing business logic
 import { CanvasHandler } from "/src/js/canvasHandler.js";
 import { TransactionHandler } from "/src/js/transactionHandler.js";
+import { TransactionParser } from "/src/js/transactionParser.js";
 
 export class ArkPlace {
     constructor(name, canvasSize) {
         this.canvasHandler_ = new CanvasHandler(name, canvasSize);
 
-        // TODO: Hardcode network parameters and app constants
-        this.protocol_ = "http";
         this.bgColorDefault_ = "#777777";
         this.coordinatorAddress_ = "AeDzxthX3xWMqinkhJivC8jWb9WcrdSkQj";
         this.txHandler_ = new TransactionHandler(this.coordinatorAddress_);
-
     }
 
     updateImage() {
