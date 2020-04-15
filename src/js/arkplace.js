@@ -1,15 +1,27 @@
 // TODO: Implements model layer containing business logic
 import { CanvasHandler } from "/src/js/canvasHandler.js";
 import { TransactionHandler } from "/src/js/transactionHandler.js";
-import { TransactionParser } from "/src/js/transactionParser.js";
+//import { TransactionParser } from "/src/js/transactionParser.js";
 
 export class ArkPlace {
     constructor(name, canvasSize) {
         this.canvasHandler_ = new CanvasHandler(name, canvasSize);
 
-        this.bgColorDefault_ = "#777777";
         this.coordinatorAddress_ = "AeDzxthX3xWMqinkhJivC8jWb9WcrdSkQj";
-        this.txHandler_ = new TransactionHandler(this.coordinatorAddress_);
+        this.canvasAddress_ = null;
+        this.txHandlerCoordinator_ = new TransactionHandler(this.coordinatorAddress_, 
+                                                            this.txReadyForProcessingCoordinator.bind(this),
+                                                            this.isCanvasValid.bind(this));
+        this.txHandlerCanvas_ = null;
+        this.canvasValidity_ = true;
+    }
+
+    isCanvasValid(tx) {
+        // parse senderId
+        // parse vendor field
+        // parse command
+        // return false if nuked
+        return this.canvasValidity_;
     }
 
     updateImage() {
@@ -55,6 +67,26 @@ export class ArkPlace {
 
     // ----------------------------------------------------------------------
     // Protocol
+    txReadyForProcessingCoordinator() {
+        // while(!this.txHandlerCoordinator_.isEmpty()) {
+        //     var tx = this.txHandlerCoordinator_.pop();
+        //     // get vendorfield
+        //     // parse vendorfield
+        //     // decode command
+        //     // execute command
+        // }
+    }
+
+    txReadyForProcessingCanvas() {
+        // while(!this.txHandlerCanvas_.isEmpty()) {
+        //     var tx = this.txHandlerCanvas_.pop();
+        //     // get vendorfield
+        //     // parse vendorfield
+        //     // decode command
+        //     // validate command
+        //     // execute command
+        // }
+    }
 
     // TODO: Parse vendorfield (elminate XSS vectors)
     // TODO: Decode command

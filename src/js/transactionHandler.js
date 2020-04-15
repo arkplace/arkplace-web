@@ -3,7 +3,7 @@ import { EndpointHandler } from "/src/js/endpointHandler.js";
 import { PeerHandler } from "/src/js/peerHandler.js";
 
 export class TransactionHandler {
-    constructor(walletId, getOutgoing = true, getIncoming = false) {
+    constructor(walletId, executeAfterReadyCallback = null, isCanvasValidCallback = null, getIncoming = false, getOutgoing = true) {
         this.peerHandler_ = new PeerHandler();
         this.walletId_ = walletId;
         this.shouldStoreIncoming_ = getIncoming;
@@ -21,6 +21,13 @@ export class TransactionHandler {
         this.lastSeenCount_ = 0;
         this.pageNumber_ = 1;
         this.txMap_ = new Map();
+        this.readyStateCallback_ = executeAfterReadyCallback;
+        if (isCanvasValidCallback) {
+            this.isCanvasValid = isCanvasValidCallback;
+        }
+        else {
+            this.isCanvasValid = (tx)=>{return true};
+        }
     }
     
     syncTransactionHistory() {
@@ -60,7 +67,7 @@ export class TransactionHandler {
         var tx = {};
         for (var idx in JsonTxData.data) {
             tx = JsonTxData.data[idx];
-            if (this.isUnseenTransaction(tx)) {
+            if (this.isUnseenTransaction(tx) && this.isCanvasValid(tx)) {
                 this.storeTransactionToQueue(tx);
             }
             else {
@@ -72,6 +79,10 @@ export class TransactionHandler {
         if (lastPage || reachedOldTransactions) {
             this.lastSeenTimestamp_ = tx.timestamp.epoch;
             this.lastSeenCount_ = JsonTxData.meta.totalCount;
+
+            if (this.readyStateCallback_){
+                this.readyStateCallback_();
+            }
         }
         else {
             this.pageNumber_++;
@@ -123,5 +134,9 @@ export class TransactionHandler {
         var retVal = Array.from(this.txMap_)[this.txMap_.size-1];
         this.txMap_.delete(retVal[0]);
         return retVal[1];
+    }
+
+    isEmpty() {
+        return this.txMap_.size == 0;
     }
 };
