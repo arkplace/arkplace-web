@@ -9,25 +9,27 @@ const isEmpty = (obj) => {
 export class TransactionHandler {
     constructor(walletId, getOutgoing = true, getIncoming = false) {
         this.peerHandler_ = new PeerHandler();
-        this.walletId = walletId;
-        this.shouldStoreIncoming = getIncoming;
-        this.shouldStoreOutgoing = getOutgoing;
+        this.walletId_ = walletId;
+        this.shouldStoreIncoming_ = getIncoming;
+        this.shouldStoreOutgoing_ = getOutgoing;
         this.seedPeersJsonURI_ = "/peers.json";
+        this.expectedTxCount_ = 100;
         this.peerToConnect_;
 
-        var readyStateCallback = (this.initializeReadyState).bind(this);
-        this.peerHandler_.registerReadyStateCallback(readyStateCallback);
+        var readyStateCallback_ = (this.initializeReadyState).bind(this);
+        this.peerHandler_.registerReadyStateCallback(readyStateCallback_);
         this.loadSeedPeers();
 
-        this.readyState = false;
-        this.lastSeenTimestamp = null;
-        this.lastSeenCount = 0;
-        this.pageNumber = 1;
-        this.txQueue = [];
-        this.lastTx = {};
+        this.readyState_ = false;
+        this.lastSeenTimestamp_ = null;
+        this.lastSeenCount_ = 0;
+        this.pageNumber_ = 1;
+        this.txQueue_ = [];
+        this.lastTx_ = {};
     }
     
     syncTransactionHistory() {
+        this.peerToConnect_ = this.peerHandler_.getRandomPeer();
         this.updateTransactions(this.appendTransactionsToHistory);
     }
 
@@ -36,22 +38,22 @@ export class TransactionHandler {
         {
             return false;
         }
-        if ( JsonTxData.meta.totalCount == this.lastSeenCount ) {
+        if ( JsonTxData.meta.totalCount == this.lastSeenCount_ ) {
             return false;
         }
         return true;
     }
 
     isUnseenTransaction(tx) {
-        return tx.timestamp.epoch > this.lastSeenTimestamp;
+        return tx.timestamp.epoch > this.lastSeenTimestamp_;
     }
 
     isIncomingTx(tx) {
-        return this.walletId == tx.recipient;
+        return this.walletId_ == tx.recipient;
     }
 
     isOutgoingTx(tx) {
-        return this.walletId == tx.sender;
+        return this.walletId_ == tx.sender;
     }
 
     appendTransactionsToHistory(JsonTxData) {
@@ -63,31 +65,31 @@ export class TransactionHandler {
         for (var idx in JsonTxData.data) {
             var tx = JsonTxData.data[idx];
             if (this.isUnseenTransaction(tx)) {
-                if (this.shouldStoreIncoming && this.isIncomingTx(tx)) {
-                    this.txQueue.push(tx);
+                if (this.shouldStoreIncoming_ && this.isIncomingTx(tx)) {
+                    this.txQueue_.push(tx);
                     wasAnythingAdded = true;
                 }
-                else if (this.shouldStoreOutgoing && this.isOutgoingTx(tx)) {
-                    this.txQueue.push(tx);
+                else if (this.shouldStoreOutgoing_ && this.isOutgoingTx(tx)) {
+                    this.txQueue_.push(tx);
                     wasAnythingAdded = true;
                 }
                 if (!isEmpty(tx)) {
-                    this.lastTx = tx;
+                    this.lastTx_ = tx;
                 }
             }
         }
 
-        if (wasAnythingAdded) {
+        if (wasAnythingAdded && JsonTxData.meta.count == this.expectedTxCount_) {
             this.syncTransactionHistory();
         }
         else {
-            this.lastSeenTimestamp = this.lastTx.timestamp.epoch;
-            this.lastSeenCount = JsonTxData.meta.totalCount;
+            this.lastSeenTimestamp_ = this.lastTx_.timestamp.epoch;
+            this.lastSeenCount_ = JsonTxData.meta.totalCount;
         }
     }
 
     initializeReadyState() {
-        this.readyState = true;
+        this.readyState_ = true;
         this.loadNextPeer();
         this.syncTransactionHistory();
     }
@@ -104,19 +106,19 @@ export class TransactionHandler {
         var peerURI = this.peerHandler_.convertToURI(this.peerToConnect_)
                     + EndpointHandler.getSearchTransactionsAPIEndpoint()
                     + EndpointHandler.getArgSpecifier()
-                    + EndpointHandler.getPageIndexFormatted(this.pageNumber);
+                    + EndpointHandler.getPageIndexFormatted(this.pageNumber_);
         
-        if (this.shouldStoreIncoming) {
+        if (this.shouldStoreIncoming_) {
             APIRequestHandler.sendJSONRequest(peerURI,
                 this.appendTransactionsToHistory.bind(this),
-                EndpointHandler.createSearchRequestPOSTData( null, this.walletId, this.lastSeenTimestamp));
+                EndpointHandler.createSearchRequestPOSTData( null, this.walletId_, this.lastSeenTimestamp_));
         }
-        if (this.shouldStoreOutgoing) {
+        if (this.shouldStoreOutgoing_) {
             APIRequestHandler.sendJSONRequest(peerURI,
                 this.appendTransactionsToHistory.bind(this),
-                EndpointHandler.createSearchRequestPOSTData( this.walletId, null, this.lastSeenTimestamp));
+                EndpointHandler.createSearchRequestPOSTData( this.walletId_, null, this.lastSeenTimestamp_));
         }
-        this.pageNumber++;
+        this.pageNumber_++;
     }
 
 };
