@@ -2,10 +2,6 @@ import { APIRequestHandler } from "./apiRequestHandler.js";
 import { EndpointHandler } from "/src/js/endpointHandler.js";
 import { PeerHandler } from "/src/js/peerHandler.js";
 
-const isEmpty = (obj) => {
-    return Object.keys(obj).length === 0 && obj.constructor === Object;
-}
-
 export class TransactionHandler {
     constructor(walletId, getOutgoing = true, getIncoming = false) {
         this.peerHandler_ = new PeerHandler();
@@ -25,7 +21,6 @@ export class TransactionHandler {
         this.lastSeenCount_ = 0;
         this.pageNumber_ = 1;
         this.txQueue_ = [];
-        this.lastTx_ = {};
     }
     
     syncTransactionHistory() {
@@ -62,8 +57,9 @@ export class TransactionHandler {
         }
 
         var wasAnythingAdded = false;
+        var tx = {};
         for (var idx in JsonTxData.data) {
-            var tx = JsonTxData.data[idx];
+            tx = JsonTxData.data[idx];
             if (this.isUnseenTransaction(tx)) {
                 if (this.shouldStoreIncoming_ && this.isIncomingTx(tx)) {
                     this.txQueue_.push(tx);
@@ -73,17 +69,15 @@ export class TransactionHandler {
                     this.txQueue_.push(tx);
                     wasAnythingAdded = true;
                 }
-                if (!isEmpty(tx)) {
-                    this.lastTx_ = tx;
-                }
             }
         }
 
-        if (wasAnythingAdded && JsonTxData.meta.count == this.expectedTxCount_) {
+        var shouldRecurse = wasAnythingAdded && JsonTxData.meta.count == this.expectedTxCount_;
+        if (shouldRecurse) {
             this.syncTransactionHistory();
         }
         else {
-            this.lastSeenTimestamp_ = this.lastTx_.timestamp.epoch;
+            this.lastSeenTimestamp_ = tx.timestamp.epoch;
             this.lastSeenCount_ = JsonTxData.meta.totalCount;
         }
     }
