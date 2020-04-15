@@ -20,7 +20,7 @@ export class TransactionHandler {
         this.lastSeenTimestamp_ = null;
         this.lastSeenCount_ = 0;
         this.pageNumber_ = 1;
-        this.txQueue_ = [];
+        this.txMap_ = new Map();
     }
     
     syncTransactionHistory() {
@@ -83,7 +83,7 @@ export class TransactionHandler {
         var shouldStore = (this.shouldStoreIncoming_ && this.isIncomingTx(tx))
                         || (this.shouldStoreOutgoing_ && this.isOutgoingTx(tx));
         if (shouldStore) {
-            this.txQueue_.push(tx);
+            this.txMap_.set(tx.id, tx);
         }
     }
 
