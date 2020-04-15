@@ -56,29 +56,34 @@ export class TransactionHandler {
             return;
         }
 
-        var wasAnythingAdded = false;
+        var reachedOldTransactions = false;
         var tx = {};
         for (var idx in JsonTxData.data) {
             tx = JsonTxData.data[idx];
             if (this.isUnseenTransaction(tx)) {
-                if (this.shouldStoreIncoming_ && this.isIncomingTx(tx)) {
-                    this.txQueue_.push(tx);
-                    wasAnythingAdded = true;
-                }
-                else if (this.shouldStoreOutgoing_ && this.isOutgoingTx(tx)) {
-                    this.txQueue_.push(tx);
-                    wasAnythingAdded = true;
-                }
+                this.storeTransactionToQueue(tx);
+            }
+            else {
+                reachedOldTransactions = true;
             }
         }
 
-        var shouldRecurse = wasAnythingAdded && JsonTxData.meta.count == this.expectedTxCount_;
-        if (shouldRecurse) {
-            this.syncTransactionHistory();
-        }
-        else {
+        var lastPage = JsonTxData.meta.pageCount == this.pageNumber_;
+        if (lastPage || reachedOldTransactions) {
             this.lastSeenTimestamp_ = tx.timestamp.epoch;
             this.lastSeenCount_ = JsonTxData.meta.totalCount;
+        }
+        else {
+            this.pageNumber_++;
+            this.syncTransactionHistory();
+        }
+    }
+
+    storeTransactionToQueue(tx) {
+        var shouldStore = (this.shouldStoreIncoming_ && this.isIncomingTx(tx))
+                        || (this.shouldStoreOutgoing_ && this.isOutgoingTx(tx));
+        if (shouldStore) {
+            this.txQueue_.push(tx);
         }
     }
 
@@ -112,7 +117,6 @@ export class TransactionHandler {
                 this.appendTransactionsToHistory.bind(this),
                 EndpointHandler.createSearchRequestPOSTData( this.walletId_, null, this.lastSeenTimestamp_));
         }
-        this.pageNumber_++;
     }
 
 };
