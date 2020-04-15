@@ -119,4 +119,9 @@ export class TransactionHandler {
         }
     }
 
+    pop() {
+        var retVal = Array.from(this.txMap_)[this.txMap_.size-1];
+        this.txMap_.delete(retVal[0]);
+        return retVal[1];
+    }
 };
