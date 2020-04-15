@@ -1,33 +1,17 @@
 // TODO: Implements model layer containing business logic
 import { CanvasHandler } from "/src/js/canvasHandler.js";
-import { PeerHandler } from "/src/js/peerHandler.js";
-import { APIRequestHandler } from "./apiRequestHandler.js";
-import { EndpointHandler } from "/src/js/endpointHandler.js"
+import { TransactionHandler } from "/src/js/transactionHandler.js";
 
 export class ArkPlace {
     constructor(name, canvasSize) {
         this.canvasHandler_ = new CanvasHandler(name, canvasSize);
-        this.peerHandler_ = new PeerHandler();
 
         // TODO: Hardcode network parameters and app constants
         this.protocol_ = "http";
         this.bgColorDefault_ = "#777777";
-        this.seedPeersJsonURI_ = "/peers.json";
         this.coordinatorAddress_ = "AeDzxthX3xWMqinkhJivC8jWb9WcrdSkQj";
+        this.txHandler_ = new TransactionHandler(this.coordinatorAddress_);
 
-        var readyStateCallback = (this.initializeReadyState).bind(this);
-        this.peerHandler_.registerReadyStateCallback(readyStateCallback);
-        this.loadSeedPeers();
-
-        // Variables to use as storage
-        this.readyState = false;
-        this.peerToConnect_;
-        this.numTxCheckpoint = 0;
-    }
-
-    initializeReadyState() {
-        this.readyState = true;
-        this.loadNextPeer();
     }
 
     updateImage() {
@@ -73,46 +57,6 @@ export class ArkPlace {
 
     // ----------------------------------------------------------------------
     // Protocol
-    loadSeedPeers() {
-        this.peerHandler_.loadPeersFromURI(this.seedPeersJsonURI_);
-    }
-
-    loadNextPeer() {
-        this.peerToConnect_ = this.peerHandler_.getRandomPeer();
-    }
-
-    getOutgoingTransactions(walletId, cb = null) {
-        this.getTransactions(walletId, "outgoing");
-    }
-
-    getIncomingTransactions(walletId, cb = null) {
-        this.getTransactions(walletId, "incoming");
-    }
-
-    getTransactions(walletId, mode) {
-        this.transactionReceivedCallback_ = cb;
-        var peerURI = this.peerHandler_.convertToURI(this.peerToConnect_) + EndpointHandler.getSearchTransactionsAPIEndpoint();
-
-        var arg1 = null;
-        var arg2 = null;
-        if (mode == "incoming") {
-            arg2 = walletId;
-        }
-        else if (mode == "outgoing") {
-            arg1 = walletId;
-        }
-        
-        APIRequestHandler.sendJSONRequest(peerURI,
-            this.transactionSearchJSONReceived,
-            EndpointHandler.createSearchRequestPOSTData( arg1, arg2 ));
-    }
-
-    transactionSearchJSONReceived(data) {
-        console.log(data);
-        if (this.transactionReceivedCallback_) {
-            this.transactionReceivedCallback_(data);
-        }
-    }
 
     // TODO: Parse vendorfield (elminate XSS vectors)
     // TODO: Decode command

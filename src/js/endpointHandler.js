@@ -22,6 +22,14 @@ export class EndpointHandler {
 
         return reqPOSTString;
     }
+
+    static getArgSpecifier() {
+        return "?";
+    }
+
+    static getPageIndexFormatted( pageIdx ) {
+        return "page=" + String(pageIdx);
+    }
 };
 
 EndpointHandler.apiPrefix = "/api/v2/";
