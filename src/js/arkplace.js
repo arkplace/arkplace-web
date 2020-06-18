@@ -1,7 +1,8 @@
 // TODO: Implements model layer containing business logic
 import { CanvasHandler } from "/src/js/canvasHandler.js";
 import { TransactionHandler } from "/src/js/transactionHandler.js";
-//import { TransactionParser } from "/src/js/transactionParser.js";
+import { TransactionParser } from "/src/js/transactionParser.js";
+import { CommandParser } from "/src/js/commandParser.js";
 
 export class ArkPlace {
     constructor(name, canvasSize) {
@@ -16,10 +17,17 @@ export class ArkPlace {
         this.canvasValidity_ = true;
     }
 
+    decodeCommand(str) {
+
+    }
+
     isCanvasValid(tx) {
         // parse senderId
+        senderAddress = TransactionParser.getSenderAddress(tx);
         // parse vendor field
+        vendorField = TransactionParser.getVendorFieldData(tx);
         // parse command
+        command = CommandParser.getCommandId(vendorField)
         // return false if nuked
         return this.canvasValidity_;
     }
