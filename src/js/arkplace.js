@@ -12,24 +12,24 @@ export class ArkPlace {
         this.canvasAddress_ = null;
         this.txHandlerCoordinator_ = new TransactionHandler(this.coordinatorAddress_, 
                                                             this.txReadyForProcessingCoordinator.bind(this),
-                                                            this.isCanvasValid.bind(this));
+                                                            this.continueSeekingOldTransaction.bind(this));
         this.txHandlerCanvas_ = null;
-        this.canvasValidity_ = true;
     }
 
-    decodeCommand(str) {
-
+    continueSeekingOldTransaction(tx) {
+        var senderAddress = TransactionParser.getSenderAddress(tx);
+        var vendorField = TransactionParser.getVendorFieldData(tx);
+        return this.checkIfCanvasValid(vendorField, senderAddress);
     }
 
-    isCanvasValid(tx) {
-        // parse senderId
-        senderAddress = TransactionParser.getSenderAddress(tx);
-        // parse vendor field
-        vendorField = TransactionParser.getVendorFieldData(tx);
-        // parse command
-        command = CommandParser.getCommandId(vendorField)
-        // return false if nuked
-        return this.canvasValidity_;
+    checkIfCanvasValid(vendorField, senderAddress) {
+        var command = CommandParser.getCommandCode(vendorField);
+        var hasRights = senderAddress == this.coordinatorAddress_;
+        var noNewCanvas = command != CommandParser.AdminCommands.CREATE_CANVAS;
+        if (hasRights) {
+            return noNewCanvas;
+        }
+        return true;
     }
 
     updateImage() {
@@ -75,25 +75,35 @@ export class ArkPlace {
 
     // ----------------------------------------------------------------------
     // Protocol
-    txReadyForProcessingCoordinator() {
-        // while(!this.txHandlerCoordinator_.isEmpty()) {
-        //     var tx = this.txHandlerCoordinator_.pop();
-        //     // get vendorfield
-        //     // parse vendorfield
-        //     // decode command
-        //     // execute command
-        // }
-    }
+    processCommand(tx) {
+        var str = tx.data.vendorField;
+        var sender = tx.sender;
+        if (!CommandParser.isChecksumValid(str))
+        {
+            return;
+        }
 
-    txReadyForProcessingCanvas() {
-        // while(!this.txHandlerCanvas_.isEmpty()) {
-        //     var tx = this.txHandlerCanvas_.pop();
-        //     // get vendorfield
-        //     // parse vendorfield
-        //     // decode command
-        //     // validate command
-        //     // execute command
-        // }
+        var cc = CommandParser.getCommandCode(str);
+        if (!cc) {
+            return;
+        }
+
+        var canvasUpdated = false;
+        if (!this.checkIfCanvasValid(str, sender)) {
+            this.canvasHandler_.resetCanvas();
+            canvasUpdated = true;
+        }
+        else if (cc == CommandParser.UserCommands.DRAW_PIXEL) {
+            // TODO: check if pixel info is valid
+            // TODO: check if payment amount is enough
+            // TODO: commit to canvas
+            // TODO: set update flag
+        }
+        // TODO: Add support for new commands
+
+        if (canvasUpdated) {
+            // TODO: refresh view
+        }
     }
 
     // TODO: Parse vendorfield (elminate XSS vectors)

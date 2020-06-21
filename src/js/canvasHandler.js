@@ -49,8 +49,10 @@ export class CanvasHandler {
         this.updateImage();
     }
 
-    resetImage() {
+    resetCanvas() {
+        this.quad_ = new DenseQuadTree(canvasSize);
         this.viewer_.clearImage();
+        this.viewer_.clearCanvas();
     }
 
     // Set depth value to be used for rendering
@@ -69,7 +71,7 @@ export class CanvasHandler {
     }
 
     updateImage() {
-        this.resetImage();
+        this.resetCanvas();
         this.processQuadTreeAndDraw();
     }
 

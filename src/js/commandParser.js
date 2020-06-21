@@ -15,27 +15,27 @@ export class CommandParser {
         TOPIC: 'tp'
     };
 
-    static isChecksumValid(str) {
+    static isChecksumValid(vendorFieldText) {
         // Last 2 bytes are checksum
-        var checksumReceived = str.substring(str.length-2, str.length);
-        var message = str.substring(0, str.length-2);
-        var checksumCalculated = CommandParser.calculateChecksum(message);
+        var checksumReceived = vendorFieldText.substring(vendorFieldText.length-2, vendorFieldText.length);
+        var vendorFieldText = vendorFieldText.substring(0, vendorFieldText.length-2);
+        var checksumCalculated = CommandParser.calculateChecksum(vendorFieldText);
 
         return checksumCalculated == checksumReceived;
     }
     
-    static calculateChecksum(message) {
+    static calculateChecksum(vendorFieldText) {
         var checksumCalculated = 0;
-        for (c in message) {
+        for (c in vendorFieldText) {
             checksumCalculated ^= c;
         }
         return (checksumCalculated % 256).toString(16);
     }
 
-    static getCommandCode(message) {
+    static getCommandCode(vendorFieldText) {
         if( isChecksumValid(str) )
         {
-            return message.substring(7, 9);
+            return vendorFieldText.substring(7, 9);
         }
         return null;
     }
