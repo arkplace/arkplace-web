@@ -14,6 +14,10 @@ export class ArkPlace {
                                                             this.txReadyForProcessingCoordinator.bind(this),
                                                             this.continueSeekingOldTransaction.bind(this));
         this.txHandlerCanvas_ = null;
+
+        var baseFee = 1;
+        var feeMultiplier = 2;
+        this.cmdParser = new CommandParser(baseFee, feeMultiplier);
     }
 
     continueSeekingOldTransaction(tx) {
@@ -23,9 +27,9 @@ export class ArkPlace {
     }
 
     checkIfCanvasValid(vendorField, senderAddress) {
-        var command = CommandParser.getCommandCode(vendorField);
+        var command = this.cmdParser.getCommandCode(vendorField);
         var hasRights = senderAddress == this.coordinatorAddress_;
-        var noNewCanvas = command != CommandParser.AdminCommands.CREATE_CANVAS;
+        var noNewCanvas = command != this.cmdParser.AdminCommands.CREATE_CANVAS;
         if (hasRights) {
             return noNewCanvas;
         }
@@ -77,32 +81,49 @@ export class ArkPlace {
     // Protocol
     processCommand(tx) {
         var str = tx.data.vendorField;
-        var sender = tx.sender;
-        if (!CommandParser.isChecksumValid(str))
+        if (!this.cmdParser.isChecksumValid(str))
         {
             return;
         }
 
-        var cc = CommandParser.getCommandCode(str);
+        var cc = this.cmdParser.getCommandCode(str);
         if (!cc) {
             return;
         }
 
+        this.applyCommand(tx);
+    }
+
+    applyCommand(tx) {
+        var str = tx.data.vendorField;
+        var sender = tx.sender;
         var canvasUpdated = false;
         if (!this.checkIfCanvasValid(str, sender)) {
-            this.canvasHandler_.resetCanvas();
+            this.canvasHandler_.nukeCanvas();
             canvasUpdated = true;
         }
-        else if (cc == CommandParser.UserCommands.DRAW_PIXEL) {
-            // TODO: check if pixel info is valid
-            // TODO: check if payment amount is enough
-            // TODO: commit to canvas
-            // TODO: set update flag
+        else if (cc == this.cmdParser.UserCommands.DRAW_PIXEL) {
+            this.parseAndCommitPixel(tx);
+            canvasUpdated = true;
         }
         // TODO: Add support for new commands
-
         if (canvasUpdated) {
-            // TODO: refresh view
+            this.updateCanvas();
+        }
+    }
+
+    updateCanvas() {
+        this.canvasHandler_.updateCanvas();
+    }
+
+    parseAndCommitPixel(tx) {
+        str = tx.data.vendorField;
+        let { x, y, depth, color } = this.cmdParser.extractDrawCommandInfo(str);
+        var rewriteCount = this.canvasHandler_.getRewriteCountFor(x, y, depth);
+        var valid = this.cmdParser.isFeesEnough(rewriteCount, tx);
+
+        if (valid) {
+            this.canvasHandler_.updateDenseTreeItem(x, y, depth, color);
         }
     }
 

@@ -29,8 +29,6 @@ export class DenseQuadTree {
     getQuadTreeSize(depth = this.maxDepth_) {
         if (depth < 0) 
             return 0;
-        
-
         return Math.floor((1 - Math.pow(this.bf_, depth)) / (1 - this.bf_));
     }
 
@@ -93,5 +91,13 @@ export class DenseQuadTree {
     getDenseQuadTreeItem(x, y, depth) {
         var idx = this.getIndexFromPos(x, y, depth);
         return this.getDenseQuadTreeItembyIndex(idx);
+    }
+
+    getRewriteCountFor(x, y, depth) {
+        var idx = this.getIndexFromPos(x, y, depth);
+        if (this.storage_[idx]) {
+            return this.storage[idx].useCount;
+        }
+        return 0;
     }
 }

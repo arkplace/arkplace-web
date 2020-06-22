@@ -50,6 +50,10 @@ export class CanvasHandler {
     }
 
     resetCanvas() {
+        this.viewer_.clearImage();
+    }
+
+    nukeCanvas() {
         this.quad_ = new DenseQuadTree(canvasSize);
         this.viewer_.clearImage();
         this.viewer_.clearCanvas();
@@ -68,6 +72,10 @@ export class CanvasHandler {
     // Drawing interface functions
     updateDenseTreeItem(x, y, depth, color, visible) {
         this.quad_.setDenseQuadTreeItem(x, y, depth, color, visible);
+    }
+
+    getRewriteCountFor(x, y, depth) {
+        return this.quad_.getRewriteCountFor(x, y, depth);
     }
 
     updateImage() {
