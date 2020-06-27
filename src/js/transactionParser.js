@@ -1,14 +1,14 @@
 
-export class TransactionHandler {
+export class TransactionParser {
     static hasVendorFieldData(tx) {
-        return tx.data.vendorField != null;
+        return tx.vendorField != null;
     }
 
     static getVendorFieldData(tx) {
-        return tx.data.vendorField;
+        return tx.vendorField;
     }
 
     static getSenderAddress(tx) {
-        return tx.data.sender;
+        return tx.sender;
     }
 };

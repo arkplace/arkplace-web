@@ -10,7 +10,7 @@ export class CommandParser {
         };
         
         this.UserCommands = {
-            DRAW_PIXEL: 'dp'
+            DRAWPIXEL: 'dp'
         };
         
         this.AdminCommands = {
@@ -32,14 +32,15 @@ export class CommandParser {
     
     calculateChecksum(vendorFieldText) {
         var checksumCalculated = 0;
-        for (c in vendorFieldText) {
+        for (const c of vendorFieldText) {
             checksumCalculated ^= c;
         }
-        return (checksumCalculated % 256).toString(16);
+        const checksumHex = (checksumCalculated % 256).toString(16);
+        return ("0" + checksumHex).slice(-2);
     }
 
     getCommandCode(str) {
-        if( isChecksumValid(str) )
+        if( str != null && this.isChecksumValid(str) )
         {
             return str.split(",")[2];
         }
@@ -67,19 +68,15 @@ export class CommandParser {
         return this.minFee + Math.pow(this.baseFee, rewriteCount);
     }
 
-    appendToCommand(str) {
-        return string(str) + this.separator;
-    }
-
     createDrawCommand(x, y, depth, color) {
         var cmd = "";
-        cmd = this.appendToCommand(this.Info.CLIENT);
-        cmd = this.appendToCommand(this.Info.VERSION);
-        cmd = this.appendToCommand(this.UserCommands.DAW_PIXEL);
-        cmd = this.appendToCommand(x);
-        cmd = this.appendToCommand(y);
-        cmd = this.appendToCommand(depth);
-        cmd = this.appendToCommand(color);
+        cmd += this.Info.CLIENT + this.separator;
+        cmd += this.Info.VERSION + this.separator;
+        cmd += this.UserCommands.DRAWPIXEL + this.separator;
+        cmd += x + this.separator;
+        cmd += y + this.separator;
+        cmd += depth + this.separator;
+        cmd += color + this.separator;
         cmd += this.calculateChecksum(cmd);
 
         return cmd;
