@@ -66,15 +66,24 @@ export class ArkPlace {
         this.drawOnCanvas(x, y, depth, color, visibleFlag);
         this.updateImage();
     }
+    
+    openInNewTab(url) {
+        var win = window.open(url, '_blank');
+        win.focus();
+      }
+
+    launchArkTransaction(arktoshiValue, receiver, vendorFieldText) {
+        // Prepare AIP26 compatible call and launch
+        var txString = "ark:" + receiver + "?";
+        txString += "vendorField=" + vendorFieldText + "&";
+        txString += "amount=" + string(arktoshiValue/1e8) + "&";
+        this.openInNewTab(txString);
+    }
 
     pixelSubmit() {
         let { x, y, depth, color } = this.getFormValues();
-        // TODO: prepare transaction
-        // TODO: submit transaction
-
-        // TODO: this is not necessary when using transaction
-        this.updatePixel(x, y, depth, color);
-        console.log({ x, y, depth, color });
+        var cmd = this.cmdParser.createDrawCommand(x, y, depth, color);
+        this.launchArkTransaction(arktoshiValue, this.coordinatorAddress_, cmd);
     }
 
     // TODO: Make transaction

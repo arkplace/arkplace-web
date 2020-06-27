@@ -71,8 +71,7 @@ export class CommandParser {
         return string(str) + this.separator;
     }
 
-    createDrawCommand(x, y, depth, color, rewriteCount) {
-        var fees = this.getFeeEstimate(rewriteCount);
+    createDrawCommand(x, y, depth, color) {
         var cmd = "";
         cmd = this.appendToCommand(this.Info.CLIENT);
         cmd = this.appendToCommand(this.Info.VERSION);
