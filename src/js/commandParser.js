@@ -1,8 +1,9 @@
 export class CommandParser {
     constructor(baseFee, feeMultiplier) {
-        this.baseFee = baseFee;
-        this.feeMultiplier = feeMultiplier;
-        
+        this.minFee = baseFee;
+        this.baseFee = feeMultiplier;
+        this.separator = ",";
+
         this.Info = {
             CLIENT: 'ap',
             VERSION: '0.1'
@@ -59,7 +60,29 @@ export class CommandParser {
     }
 
     isFeesEnough(rewriteCount, tx) {
-        return 
+        return tx.data.amount > this.getFeeEstimate(rewriteCount);
     }
 
+    getFeeEstimate(rewriteCount) {
+        return this.minFee + Math.pow(this.baseFee, rewriteCount);
+    }
+
+    appendToCommand(str) {
+        return string(str) + this.separator;
+    }
+
+    createDrawCommand(x, y, depth, color, rewriteCount) {
+        var fees = this.getFeeEstimate(rewriteCount);
+        var cmd = "";
+        cmd = this.appendToCommand(this.Info.CLIENT);
+        cmd = this.appendToCommand(this.Info.VERSION);
+        cmd = this.appendToCommand(this.UserCommands.DAW_PIXEL);
+        cmd = this.appendToCommand(x);
+        cmd = this.appendToCommand(y);
+        cmd = this.appendToCommand(depth);
+        cmd = this.appendToCommand(color);
+        cmd += this.calculateChecksum(cmd);
+
+        return cmd;
+    }
 }

@@ -15,9 +15,9 @@ export class ArkPlace {
                                                             this.continueSeekingOldTransaction.bind(this));
         this.txHandlerCanvas_ = null;
 
-        var baseFee = 1;
-        var feeMultiplier = 2;
-        this.cmdParser = new CommandParser(baseFee, feeMultiplier);
+        var minFee = 1000000; // arktoshi
+        var baseFee = 2;
+        this.cmdParser = new CommandParser(minFee, baseFee);
     }
 
     continueSeekingOldTransaction(tx) {
@@ -49,8 +49,7 @@ export class ArkPlace {
     }
 
     pixelErase(x, y, depth) {
-        this.drawOnCanvas(x, y, depth, this.bgColorDefault_, false);
-        this.updateImage();
+        this.updatePixel(x, y, depth, "", false);
     }
 
     // ----------------------------------------------------------------------
@@ -60,8 +59,11 @@ export class ArkPlace {
         this.canvasHandler_.setDepth(depth);
     }
 
-    updatePixel(x, y, depth, color) {
-        this.drawOnCanvas(x, y, depth, color);
+    updatePixel(x, y, depth, color, visibleFlag = true) {
+        if (!visibleFlag) {
+            color = this.bgColorDefault_;
+        }
+        this.drawOnCanvas(x, y, depth, color, visibleFlag);
         this.updateImage();
     }
 
@@ -127,25 +129,22 @@ export class ArkPlace {
         }
     }
 
-    // TODO: Parse vendorfield (elminate XSS vectors)
-    // TODO: Decode command
-    // TODO: Validate command
-
     // ----------------------------------------------------------------------
     // Coordinator address functions
     // TODO: Get active canvas
 
     // ----------------------------------------------------------------------
     // Canvas address functions
-    // TODO: Get base unit
-    // TODO: Get multiplier
+    // TODO: Get min fee
+    // TODO: Get base fee
     // TODO: Get canvas status
     // TODO: Get topic
 
     // ----------------------------------------------------------------------
     // User commands
     // Draw on canvas
-    drawOnCanvas(x, y, depth, color, visible = true) { // Make sure all required values are defined
+    drawOnCanvas(x, y, depth, color, visible = true) {
+        // Make sure all required values are defined
         if (x && y && depth && color) {
             this.canvasHandler_.updateDenseTreeItem(x, y, depth, color, visible);
             this.canvasHandler_.updateImage();
