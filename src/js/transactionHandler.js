@@ -29,7 +29,7 @@ export class TransactionHandler {
             this.isCanvasValid = (tx)=>{return true};
         }
     }
-    
+
     syncTransactionHistory() {
         this.peerToConnect_ = this.peerHandler_.getRandomPeer();
         this.updateTransactions(this.appendTransactionsToHistory);

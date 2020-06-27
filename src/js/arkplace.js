@@ -16,6 +16,14 @@ export class ArkPlace {
         var minFee = 1000000; // arktoshi
         var baseFee = 2;
         this.cmdParser_ = new CommandParser(minFee, baseFee);
+        this.ready = false;
+        this.periodicRefreshTrigger = setInterval(this.periodicRefresh.bind(this), 8000);
+    }
+
+    periodicRefresh() {
+        if (this.ready) {
+            this.txHandlerCoordinator_.syncTransactionHistory()
+        }
     }
 
     txReadyForProcessingCoordinator() {
@@ -23,6 +31,7 @@ export class ArkPlace {
             var tx = this.txHandlerCoordinator_.pop();
             this.processCommand(tx);
         }
+        this.ready = true;
     }
 
     shouldContinueSeekingOldTransaction(tx) {
