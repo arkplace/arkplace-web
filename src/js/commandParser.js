@@ -38,10 +38,10 @@ export class CommandParser {
         return (checksumCalculated % 256).toString(16);
     }
 
-    getCommandCode(vendorFieldText) {
+    getCommandCode(str) {
         if( isChecksumValid(str) )
         {
-            return vendorFieldText.substring(7, 9);
+            return str.split(",")[2];
         }
         return null;
     }
@@ -60,7 +60,7 @@ export class CommandParser {
     }
 
     isFeesEnough(rewriteCount, tx) {
-        return tx.data.amount > this.getFeeEstimate(rewriteCount);
+        return tx.data.amount >= this.getFeeEstimate(rewriteCount);
     }
 
     getFeeEstimate(rewriteCount) {
