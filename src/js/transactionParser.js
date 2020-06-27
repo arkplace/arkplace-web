@@ -1,7 +1,7 @@
 
 export class TransactionHandler {
     static hasVendorFieldData(tx) {
-
+        return tx.data.vendorField != null;
     }
 
     static getVendorFieldData(tx) {
