@@ -5,7 +5,7 @@ export class CommandParser {
         this.separator = ",";
 
         this.Info = {
-            CLIENT: 'ap',
+            CLIENT: 'aplc',
             VERSION: '0.1'
         };
         

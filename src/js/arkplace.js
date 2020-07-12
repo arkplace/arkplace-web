@@ -1,4 +1,3 @@
-// TODO: Implements model layer containing business logic
 import { CanvasHandler } from "/src/js/canvasHandler.js";
 import { TransactionHandler } from "/src/js/transactionHandler.js";
 import { TransactionParser } from "/src/js/transactionParser.js";
@@ -121,7 +120,7 @@ export class ArkPlace {
         this.applyCommand(tx);
     }
 
-    applyCommand(tx) {
+    applyCommand(tx, cc) {
         var str = tx.vendorField;
         var sender = tx.sender;
         var canvasUpdated = false;
