@@ -16,7 +16,8 @@ export class EndpointHandler {
             jsonPostObject.recipientId = recipientId;
         }
         if (timestampFrom) {
-            jsonPostObject.timestampFrom = timestampFrom;
+            jsonPostObject.timestamp = {}
+            jsonPostObject.timestamp.from = timestampFrom;
         }
         var reqPOSTString = JSON.stringify(jsonPostObject);
 
