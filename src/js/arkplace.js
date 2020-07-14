@@ -117,7 +117,7 @@ export class ArkPlace {
             return;
         }
 
-        this.applyCommand(tx);
+        this.applyCommand(tx, cc);
     }
 
     applyCommand(tx, cc) {
@@ -139,17 +139,17 @@ export class ArkPlace {
     }
 
     updateCanvas() {
-        this.canvasHandler_.updateCanvas();
+        this.canvasHandler_.updateImage();
     }
 
     parseAndCommitPixel(tx) {
-        str = tx.data.vendorField;
+        var str = tx.vendorField;
         let { x, y, depth, color } = this.cmdParser_.extractDrawCommandInfo(str);
         var rewriteCount = this.canvasHandler_.getRewriteCountFor(x, y, depth);
         var valid = this.cmdParser_.isFeesEnough(rewriteCount, tx);
 
         if (valid) {
-            this.canvasHandler_.updateDenseTreeItem(x, y, depth, color);
+            this.canvasHandler_.updateDenseTreeItem(x, y, depth, color, true);
         }
     }
 

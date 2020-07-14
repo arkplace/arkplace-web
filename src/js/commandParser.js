@@ -50,7 +50,7 @@ export class CommandParser {
     extractDrawCommandInfo(str) {       
         // draw pixel = identifier, version, command code, x, y, depth, color
         var chunks = str.split(",");
-        if (chunks.length != 8 || chunks[2] != this.UserCommands.DRAW_PIXEL) {
+        if (chunks.length != 8 || chunks[2] != this.UserCommands.DRAWPIXEL) {
             return;
         }
         var x = parseInt(chunks[3]);
@@ -61,7 +61,7 @@ export class CommandParser {
     }
 
     isFeesEnough(rewriteCount, tx) {
-        return tx.data.amount >= this.getFeeEstimate(rewriteCount);
+        return tx.amount >= this.getFeeEstimate(rewriteCount);
     }
 
     getFeeEstimate(rewriteCount) {
