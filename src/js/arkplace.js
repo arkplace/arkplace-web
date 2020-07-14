@@ -82,7 +82,9 @@ export class ArkPlace {
     
     openInNewTab(url) {
         var win = window.open(url, '_blank');
-        win.focus();
+        if (win) {
+            win.focus();
+        }
       }
 
     launchArkTransaction(arktoshiValue, receiver, vendorFieldText) {

@@ -72,7 +72,7 @@ export class DenseQuadTree {
         var idx = this.getIndexFromPos(x, y, depth);
 
         // If uninitialized
-        if (typeof this.storage_[idx] === 'undefined') {
+        if (!this.storage_[idx]) {
             this.storage_[idx] = this.createNewItem();
         }
         this.storage_[idx].useCount ++;
@@ -80,11 +80,11 @@ export class DenseQuadTree {
         this.storage_[idx].visible = visible;
     }
 
-    getDenseQuadTreeItemByIndex(index) { // If uninitialized
-        if (typeof this.storage_[index] === 'undefined') {
+    getDenseQuadTreeItemByIndex(idx) { // If uninitialized
+        if (!this.storage_[idx]) {
             return this.createNewItem();
         } else {
-            return this.storage_[index];
+            return this.storage_[idx];
         }
     }
 
@@ -96,7 +96,7 @@ export class DenseQuadTree {
     getRewriteCountFor(x, y, depth) {
         var idx = this.getIndexFromPos(x, y, depth);
         if (this.storage_[idx]) {
-            return this.storage[idx].useCount;
+            return this.storage_[idx].useCount;
         }
         return 0;
     }
