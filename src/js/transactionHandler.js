@@ -3,7 +3,7 @@ import { EndpointHandler } from "/src/js/endpointHandler.js";
 import { PeerHandler } from "/src/js/peerHandler.js";
 
 export class TransactionHandler {
-    constructor(walletId, executeAfterReadyCallback = null, isCanvasValidCallback = null, getIncoming = false, getOutgoing = true) {
+    constructor(walletId, executeAfterReadyCallback = null, isCanvasValidCallback = null, getIncoming = true, getOutgoing = true) {
         this.peerHandler_ = new PeerHandler();
         this.walletId_ = walletId;
         this.shouldStoreIncoming_ = getIncoming;
